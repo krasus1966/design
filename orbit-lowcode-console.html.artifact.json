@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "Orbit 低代码控制台 · 产品原型",
+  "entry": "orbit-lowcode-console.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "primary": true,
+  "createdAt": "2026-09-10T14:28:10.110Z",
+  "updatedAt": "2026-09-10T14:28:10.143Z",
+  "designSystemId": "shadcn",
+  "metadata": {
+    "identifier": "orbit-lowcode-console",
+    "artifactType": "text/html",
+    "inferred": false
+  }
+}

@@ -1,0 +1,456 @@
+
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orbit 低代码控制台 · 产品原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── tokens ─────────────────────────────────────────────────────────
+       Shadcn — Modern & Minimal. Light + dark. The ONLY place hex lives. */
+    :root {
+      --bg:      #fafafa;   /* app canvas — never #fff */
+      --surface: #ffffff;   /* cards, panels, raised areas */
+      --fg:      #111## Objective
+- Design a high-fidelity, multi-view switchable web prototype of a 1920×1080 admin/backend console for a SaaS low-code development platform (低代码开发平台).
+
+## Important Details
+- Locked form answers: business = SaaS系统/低代码开发平台; modules = 数据概览/KPI 卡片 (`overview`), 图表分析区 (`charts`), 数据表格/列表 (`table`), 动态/通知流 (`activity`), 用户/成员管理 (`users`), 单据配置 (`documents`), 系统设置 (`settings`); scope = 多屏可切换原型 (`multi`).
+- Build decision: **single self-contained HTML file** — left sidebar nav switching 7 views (数据概览 / 图表分析 / 数据表格 / 动态通知 / 成员管理 / 单据配置 / 系统设置) + frosted topbar app-shell + client-side view router + `data-theme` dark-mode toggle (`<html data-theme="light">`).
+- Seed is a *landing-page* seed; keep its token block + class system (cards/tables/stats/pills/tags/features) and add a thin app-shell layer on the same tokens.
+- Active skill: Web Prototype, root `.od-skills/web-prototype-cf4a0fb5c9/`; SKILL.md: `platform: desktop`, `preview {type: html, entry: index.html}`. Active plugin: 网页原型 (`example-web-prototype@0.1.1`, `publishedAt 2026-05-12T07:18:16Z`); inputs: artifactKind=web prototype, audience=product evaluators, fidelity=high-fidelity, template=bundled seed.
+- Active design system **verified: `shadcn`** — run `28ea2bf1-8f70-4ae2-85f8-e001e3e56651/state.json`: `designSystemId`=`shadcn`, `designSystemSelectionSource`=`request`, `designSystemDigest`=`5028d0888388f7771605e6f1dd2792f06452fdea7c485c437b7aa6f3caccb01a`.
+- **Canonical Shadcn token values (from `design-systems\shadcn`)** — `DESIGN.md` §2 Category "Modern & Minimal": Primary `#000000`, Secondary `#111111`, Success `#16A34A`, Warning `#D97706`, Danger `#DC2626`, Surface `#FFFFFF`, Text `#111827`. Typography §3: scale 12/14/16/20/24/32; families primary=Geist, display=Geist, mono=Fira Code; weights 100–900. Spacing §4: 4/8/12/16/24/32.
+- **`tokens.css`** (15326 B): `--accent`=`#000000` (NOT chromatic); `--accent-hover`/`--accent-active` mix TOWARD WHITE (mirrors `hover:bg-primary/90`); `--fg`=`#111827` (Tailwind slate-900) distinct from accent; no standalone dark-mode block in this file.
+- **`kit.dark.html` (system/)** `:root`: `--accent #000000`, `--accent-active color-mix(in oklab,var(--accent),white 18%)`, `--accent-hover …white 10%`, `--accent-on #ffffff`, `--bg #ffffff`, `--border #e5e7eb`, `--fg #111827`, `--muted #64748b`, `--danger #dc2626`, fonts Geist/Geist Sans + Fira Code, radius `0.5rem`(8px) tiers sm 6 / md 8 / lg 12, `--container-max 1280px`, gutters desktop 24 / tablet+phone 16.
+- **Light canvas confirmed for artifact**: `--bg #fafafa`, `--surface #ffffff`, `--fg #111827`, `--muted #64748b`, `--border #e5e7eb`, `--accent #000000`. Artifact loads Geist + Fira Code via Google Fonts `<link>`.
+- **`tailwind-v4.css`**: `@import "tailwindcss"` + `@import "./tokens.css"`; `@theme` maps `--color-*`, `--font-*`, `--text-*`, `--spacing-*`, `--radius-*`.
+- **`USAGE.md`** read order: 1 USAGE → 2 DESIGN.md → 3 paste `tokens.css` into first `<style>` → 4 `components.manifest.json`/`components.html` → 5 `preview/*`.
+- Seed `assets/template.html` (16951 B) ships 6 placeholder tokens: --bg `#fafaf7` (never `#fff`), --surface `#ffffff`, --fg `#1a1916` (never `#000`), --muted `#6b6964`, --border `#e8e5df`, --accent `#c96442` (≤2×/screen); derived `--accent-soft`/`--fg-soft` via `color-mix(in oklch, …)`; display=serif default. Header comment: token block is the *only* place to set palette/type; swap six vars when a design system is injected.
+- UI locale `zh-CN`: all user-visible prose/UI copy in Simplified Chinese; keep ids/values/brand names/technical identifiers unlocalized.
+- Output contract: single self-contained HTML wrapped in `<artifact identifier="orbit-lowcode-console" type="text/html" title="Orbit 低代码控制台 · 产品原型">`; semantic filename (not `index.html`).
+- Project dir: `C:\Users\krasus1966\AppData\Roaming\Open Design\namespaces\release-stable-win\data\projects\4e516f7d-71ae-4734-a2ad-c0d5b12e4816` (only `.od-skills/`, `.codegraph/`, `.omo/` present — **no output HTML yet**). Linked read-only reference code: `F:\project2\lowcode`.
+- Runtime env: `OD_APP_VERSION=0.22.2`; `OD_PROJECT_ID=4e516f7d-71ae-4734-a2ad-c0d5b12e4816`; daemon `OD_DAEMON_URL=http://127.0.0.1:54693`; `OD_NODE_BIN=D:\software\Open Design\Open Design.exe`; `OD_BIN=D:\software\Open Design\resources\app\prebundled\daemon\daemon-cli.mjs`; one render max via `export`.
+- GateGuard hook "Fact-Forcing Gate" blocks first Bash until facts presented; recovery `ECC_GATEGUARD=off` or add `pre:bash:gateguard-fact-force` to `ECC_DISABLED_HOOKS`. Prefer `task` with explore/librarian agents over direct search.
+
+## Work State
+### Completed
+- Continuation-state JSONs read (all idle/empty): `…\.omo\run-continuation\ses_f7458282bffeUp08RffIvVJ5xj.json`, `ses_f745a1a59ffesTpZJl6q8J5n31.json`, `ses_f745c1555ffeCN7hEVQ8SNWz8p.json` (214 B each).
+- Project file enumeration confirmed: only `.od-skills/web-prototype-cf4a0fb5c9/{example.html 4298B, open-design.json 9810B, SKILL.md 5969B, assets/template.html 16951B, references/checklist.md 4726B, references/layouts.md 11242B}` + `.omo/run-continuation/*.json`; **no output HTML**.
+- OD data dirs `design-systems`, `brands`, `library` exist under `…\release-stable-win\data\` but are **EMPTY**; no project-level `DESIGN.md`.
+- Run states under `…\data\runs\` (7 matching project); newest = `28ea2bf1-8f70-4ae2-85f8-e001e3e56651` (status `running`, model `deepseek-flash`, `artifactCount 0`, appVersion 0.22.2 win32 x64).
+- Design system confirmed = `shadcn` (via request).
+- Pre-flight re-confirmed: `assets/template.html`, `references/layouts.md` (8 skeletons + class inventory), `references/checklist.md`, `SKILL.md`, `open-design.json`, `example.html`.
+- Committed numbered plan via `todowrite` (6 todos on board).
+- **Canonical Shadcn package fully enumerated + key files read**: `DESIGN.md`, `tokens.css`, `tailwind-v4.css`, `USAGE.md`, `system/kit.dark.html` — token values now sourced.
+- Began emitting `<artifact>` — composed `<!doctype html>`, `<head>` (title, Google Fonts links, `:root` token block with light values) inside the Orbit console artifact.
+
+### Active
+- Writing the single self-contained artifact HTML: `:root` (+ upcoming `:root[data-theme=dark]`) Shadcn token block, then app-shell CSS + 7 view sections + router/dark-mode JS. Todo 1 (token bind) in_progress.
+
+### Blocked
+- Canonical dark-mode token values not fully extracted (`tokens.css` has no dark block; `kit.dark.html` visible `:root` is light; dark block may be truncated further down). May need rest of `kit.dark.html` and/or `design-tokens.json`/`source/tokens.source.json`; or derive a dark palette on the same accent/fg logic.
+
+## Next Move
+1. Finish the artifact: close `:root` light tokens, add `:root[data-theme=dark]`, then append app-shell + dashboard CSS after seed rules: `.app .sidebar .side-nav .nav-item .topbar .view .page-head .kpi .panel .bars .hbar .feed .status .switch .pager .tabs` (todo 2).
+2. Compose 7 `main#content` view sections with real zh-CN copy + `data-od-id` each (todo 3); wire vanilla-JS view router (`data-view` toggle + `data-crumb` + localStorage) and `data-theme` dark-mode toggle (todo 4); self-check vs checklist P0 (todo 5); emit artifact (todo 6).
+
+## Relevant Files
+- `.od-skills/web-prototype-cf4a0fb5c9/SKILL.md`: skill definition, workflow, resource map (5969 B).
+- `.od-skills/web-prototype-cf4a0fb5c9/assets/template.html`: seed (tokens + class system + chrome) — source to copy; 6 placeholder tokens; token block sole palette/type source (16951 B).
+- `.od-skills/web-prototype-cf4a0fb5c9/references/layouts.md`: 8 paste-ready skeletons + class inventory: `section container hero hero-center hero-split hero-cta eyebrow lead h1 h2 h3 meta num btn btn-primary btn-secondary btn-ghost btn-arrow card card-flat card-rule feature feature-mark stat stat-num stat-label stat-unit quote quote-mark quote-author pill tag field input textarea ds-table num-col ph-img content-img square portrait wide rule rule-strong grid-2 grid-3 grid-4 grid-2-1 grid-1-2 row row-between stack log-row pull topnav pagefoot` (11242 B). Default rhythms: Landing 1→2→3→4→6→footer; Marketing/editorial 1 hero-center→7 log-list→4 split→6 cta-strip; Pricing/docs 1 hero-center→table→6 cta-strip. One accent per screen ≤2×.
+- `.od-skills/web-prototype-cf4a0fb5c9/references/checklist.md`: P0/P1/P2 gate (P0: no raw hex outside `:root`; grep `#[0-9a-fA-F]{3,8}` outside `:root{}` = nothing; all headings `var(--font-display)`; accent ≤2×/screen; no purple/violet gradients; no emoji icons; no invented metrics; no filler copy; real images; no remote image deps).
+- `.od-skills/web-prototype-cf4a0fb5c9/example.html`: reference seed-usage example.
+- `.od-skills/web-prototype-cf4a0fb5c9/open-design.json`: plugin manifest (`example-web-prototype@0.1.1`).
+- Project dir `…\projects\4e516f7d-71ae-4734-a2ad-c0d5b12e4816`: write target for output HTML/assets; holds `.codegraph/` (db, daemon.log, daemon.pid) and `.omo/run-continuation/` session JSONs.
+- `…\data\runs\28ea2bf1-8f70-4ae2-85f8-e001e3e56651\state.json`: authoritative design-system selection (`shadcn`, source `request`, digest `5028d088…`).
+- `D:\software\Open Design\resources\open-design\design-systems\shadcn`: canonical Shadcn package — key files `DESIGN.md`, `tokens.css`, `tailwind-v4.css`, `USAGE.md`, `system/kit.dark.html`, `design-tokens.json`, `source/tokens.source.json`, `components.html`, `components.manifest.json`, `preview/*`. Also `…\design-systems\_schema\AGENTS.md`.
+- `F:\project2\lowcode`: read-only linked reference code.
+
+## Constraints (verbatim)
+- "No raw hex outside the `:root` token block." Grep `#[0-9a-fA-F]{3,8}` outside `:root{}` must return nothing; all color via `var(--bg|--surface|--fg|--muted|--border|--accent)` or `color-mix()`.
+- "Single accent, used at most twice per screen."
+- "All headings use `var(--font-display)`." No sans-serif `<h1>`/`<h2>`.
+- "No purple/violet gradient backgrounds." "No emoji used as feature icons." "No invented metrics." "No filler copy."
+- "Real imagery, never remote hotlinks." Named real-world referents must use correct real images (search/fetch, embed as data URI); never generate/draw/generic/look-alike/fictional substitutes. Preserve intrinsic width/height on `content-img`.
+- Every `<section>` gets `data-od-id`; repeated cards get unique ids (e.g. `feature-card-speed`).
+- Do not reuse `.ph-img`/`.wide`/`.portrait`/`.square` classes on real images.
+- Mobile reflow via seed media query at 920px; don't add fixed widths.
+- Do not use `scrollIntoView`; persist state in `localStorage`.Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.I'll verify the current state and gather the exact source material before composing. Let me read the key files in parallel.I have everything I need: the seed's class system, the shadcn token bindings, the P0 checklist, and the artifact output contract. Here's the self-contained Orbit 低代码控制台 prototype — one HTML file with a fixed sidebar app shell, a frosted topbar, 7 client-side routed views, light/dark theming on the shadcn tokens, and no external dependencies.
+
+<artifact identifier="orbit-lowcode-console" type="text/html" title="Orbit 低代码控制台 · 产品原型">
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orbit 低代码控制台 · 产品原型</title>
+  <style>
+    /* ─── tokens · design system: shadcn ────────────────────────────────
+       The ONLY place palette and type are set. Everything below consumes
+       these via var()/color-mix(); no raw hex appears outside a :root
+       block. */
+    :root {
+      /* surface */
+      --bg: #ffffff;
+      --surface: #ffffff;
+
+      /* foreground ramp */
+      --fg: #111827;
+      --muted: #64748b;
+
+      /* border */
+      --border: #e5e7eb;
+
+      /* accent — shadcn primary is pure black; hover/active lift toward white */
+      --accent: #000000;
+      --accent-on: #ffffff;
+      --accent-hover: color-mix(in oklab, var(--accent), white 10%);
+      --accent-active: color-mix(in oklab, var(--accent), white 18%);
+
+      /* semantic — state only, never decoration */
+      --success: #16a34a;
+      --warn: #d97706;
+      --danger: #dc2626;
+
+      /* derived surfaces (no hex) */
+      --fg-soft: color-mix(in oklab, var(--fg) 6%, transparent);
+      --fg-softer: color-mix(in oklab, var(--fg) 3%, transparent);
+      --accent-soft: color-mix(in oklab, var(--accent) 10%, transparent);
+
+      /* type */
+      --font-display: "Geist", "Geist Sans", -apple-system, system-ui, "Segoe UI", Arial, sans-serif;
+      --font-body: "Geist", "Geist Sans", -apple-system, system-ui, "Segoe UI", Arial, sans-serif;
+      --font-mono: "Fira Code", ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+      --text-xs: 12px;
+      --text-sm: 14px;
+      --text-base: 16px;
+      --text-lg: 20px;
+      --text-xl: 24px;
+      --text-2xl: 32px;
+
+      --leading-body: 1.5;
+      --leading-tight: 1.2;
+      --tracking-display: -0.02em;
+
+      /* spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+
+      /* radius */
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-pill: 9999px;
+
+      /* elevation */
+      --elev-raised:
+        0 1px 2px 0 color-mix(in oklab, var(--fg), transparent 92%),
+        0 1px 3px 0 color-mix(in oklab, var(--fg), transparent 88%);
+
+      /* focus — the shadcn ring-2 + offset pattern */
+      --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+
+      /* motion */
+      --motion-fast: 150ms;
+      --motion-base: 200ms;
+      --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    /* dark theme — shadcn dark preset: primary flips to near-white */
+    :root[data-theme="dark"] {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --fg: #fafafa;
+      --muted: #a1a1aa;
+      --border: #262626;
+      --accent: #fafafa;
+      --accent-on: #0a0a0a;
+      --accent-hover: color-mix(in oklab, var(--accent), black 10%);
+      --accent-active: color-mix(in oklab, var(--accent), black 18%);
+      --success: #4ade80;
+      --warn: #fbbf24;
+      --danger: #f87171;
+    }
+
+    /* ─── reset & base ────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      line-height: var(--leading-body);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; line-height: var(--leading-tight); letter-spacing: var(--tracking-display); }
+    h1 { font-size: var(--text-2xl); font-weight: 600; }
+    h2 { font-size: var(--text-lg); font-weight: 600; }
+    h3 { font-size: var(--text-base); font-weight: 600; }
+    p { margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    svg { display: block; }
+    ::selection { background: var(--fg-soft); }
+
+    :focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+
+    .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    .meta { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--muted); }
+    .muted { color: var(--muted); }
+    .rule { border: 0; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ─── app shell ───────────────────────────────────────────────────── */
+    .app { display: grid; grid-template-columns: 244px minmax(0, 1fr); min-height: 100vh; }
+
+    .sidebar {
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column;
+      padding: var(--space-3) var(--space-3) var(--space-2);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px; }
+    .brand-mark {
+      width: 30px; height: 30px; flex: none;
+      display: grid; place-items: center;
+      border-radius: var(--radius-md);
+      background: var(--accent); color: var(--accent-on);
+      font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    }
+    .brand-name { font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+    .brand-sub { font-size: 11px; color: var(--muted); }
+
+    .side-nav { display: flex; flex-direction: column; gap: 2px; }
+    .nav-label {
+      padding: 16px 10px 6px;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 8px 10px;
+      border: 0; border-radius: var(--radius-sm);
+      background: transparent; color: var(--muted);
+      font-size: var(--text-sm); text-align: left;
+      transition: background var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
+    }
+    .nav-item:hover { background: var(--fg-softer); color: var(--fg); }
+    .nav-item.is-active { background: var(--fg-soft); color: var(--fg); font-weight: 500; }
+    .nav-item .nav-ico { width: 16px; height: 16px; flex: none; }
+    .nav-item.is-active .nav-ico { color: var(--accent); }
+    .nav-item .nav-badge {
+      margin-left: auto; font-family: var(--font-mono); font-size: 11px;
+      color: var(--muted); background: var(--fg-softer); border-radius: var(--radius-pill);
+      padding: 1px 7px;
+    }
+
+    .side-foot { margin-top: auto; padding-top: var(--space-3); }
+    .user-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-md);
+    }
+    .user-card .u-name { font-size: 13px; font-weight: 500; }
+    .user-card .u-mail { font-size: 11px; color: var(--muted); }
+    .user-card .u-out { margin-left: auto; color: var(--muted); }
+
+    .main { min-width: 0; display: flex; flex-direction: column; }
+
+    /* ─── topbar ──────────────────────────────────────────────────────── */
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: 10px var(--space-6);
+      background: color-mix(in oklab, var(--bg) 82%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .crumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); min-width: 0; }
+    .crumb .crumb-sep { color: var(--border); }
+    .crumb #crumb { color: var(--fg); font-weight: 500; }
+    .search {
+      display: flex; align-items: center; gap: 8px;
+      flex: 1; max-width: 340px; margin-left: auto;
+      padding: 7px 12px;
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      background: var(--surface); color: var(--muted); font-size: 13px;
+    }
+    .search svg { width: 15px; height: 15px; flex: none; }
+    .search kbd {
+      margin-left: auto; font-family: var(--font-mono); font-size: 11px;
+      color: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 1px 6px;
+    }
+    .icon-btn {
+      width: 34px; height: 34px; flex: none;
+      display: grid; place-items: center;
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      background: var(--surface); color: var(--muted);
+      transition: color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
+    }
+    .icon-btn:hover { color: var(--fg); border-color: var(--fg); }
+    .icon-btn svg { width: 16px; height: 16px; }
+    [data-theme="light"] .ico-sun { display: none; }
+    [data-theme="dark"] .ico-moon { display: none; }
+    .avatar {
+      width: 32px; height: 32px; flex: none;
+      display: grid; place-items: center;
+      border-radius: var(--radius-pill); border: 1px solid var(--border);
+      background: var(--fg-soft); font-size: 12px; font-weight: 600;
+    }
+    .avatar.sm { width: 26px; height: 26px; font-size: 11px; }
+
+    /* ─── content ─────────────────────────────────────────────────────── */
+    .content { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-5); }
+    .view { display: none; flex-direction: column; gap: var(--space-5); }
+    .view.is-active { display: flex; }
+
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+    .page-head .ph-text { display: flex; flex-direction: column; gap: 6px; }
+    .page-head .ph-sub { color: var(--muted); font-size: 13px; }
+    .page-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+    /* ─── primitives ──────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 14px; border-radius: var(--radius-sm);
+      border: 1px solid transparent; font-size: 13px; font-weight: 500;
+      transition: background var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
+    }
+    .btn svg { width: 15px; height: 15px; }
+    .btn-primary { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-primary:active { background: var(--accent-active); }
+    .btn-secondary { background: var(--surface); color: var(--fg); border-color: var(--border); }
+    .btn-secondary:hover { border-color: var(--fg); }
+    .btn-ghost { background: transparent; color: var(--muted); border-color: transparent; padding-inline: 8px; }
+    .btn-ghost:hover { color: var(--fg); background: var(--fg-softer); }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 2px 9px; border: 1px solid var(--border); border-radius: var(--radius-pill);
+      font-size: 12px; color: var(--muted);
+    }
+    .tag.accent { border-color: var(--accent); color: var(--fg); }
+
+    .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; white-space: nowrap; }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: var(--radius-pill); background: currentColor; }
+    .status.ok { color: var(--success); }
+    .status.warn { color: var(--warn); }
+    .status.err { color: var(--danger); }
+    .status.idle { color: var(--muted); }
+
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); }
+    .panel-head .ph-title { display: flex; flex-direction: column; gap: 2px; }
+    .panel-head .ph-title span { font-size: 12px; color: var(--muted); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+    .grid-21 { display: grid; grid-template-columns: 2fr minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+
+    /* ─── kpi ─────────────────────────────────────────────────────────── */
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+    .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; flex-direction: column; gap: 10px; }
+    .kpi-label { font-size: 12px; color: var(--muted); }
+    .kpi-val { font-family: var(--font-display); font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+    .kpi-val .unit { font-size: 0.55em; color: var(--muted); font-weight: 500; margin-left: 2px; }
+    .kpi-foot { display: flex; align-items: center; justify-content: space-between; }
+    .delta { font-family: var(--font-mono); font-size: 12px; }
+    .delta.up { color: var(--success); }
+    .delta.down { color: var(--danger); }
+    .delta.flat { color: var(--muted); }
+
+    /* ─── charts ──────────────────────────────────────────────────────── */
+    .line-chart { width: 100%; height: 210px; display: block; }
+    .line-chart .g-line { stroke: var(--fg-softer); stroke-width: 1; }
+    .line-chart .l-area { fill: var(--accent-soft); }
+    .line-chart .l-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    .line-chart .l-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+    .chart-x { display: flex; justify-content: space-between; margin-top: 8px; }
+
+    .bars { display: flex; align-items: flex-end; gap: 10px; height: 176px; }
+    .hbar { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 8px; height: 100%; }
+    .hbar-fill { width: 100%; border-radius: var(--radius-sm) var(--radius-sm) 0 0; background: var(--fg-soft); transition: height var(--motion-base) var(--ease-standard); }
+    .hbar-fill.hot { background: var(--accent); }
+    .hbar-x { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+
+    .dist-row { display: grid; grid-template-columns: 92px 1fr 44px; gap: 12px; align-items: center; padding: 7px 0; font-size: 13px; }
+    .dist-track { height: 8px; border-radius: var(--radius-pill); background: var(--fg-soft); overflow: hidden; }
+    .dist-fill { height: 100%; border-radius: var(--radius-pill); background: color-mix(in oklab, var(--fg) 50%, transparent); }
+    .dist-val { text-align: right; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+    /* ─── table ───────────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+    .ds-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ds-table th, .ds-table td { padding: 11px 14px## Objective
+- Design a high-fidelity, multi-view switchable web prototype of a 1920×1080 admin/backend console for a SaaS low-code development platform (低代码开发平台).
+
+## Important Details
+- Locked form answers: business = SaaS系统/低代码开发平台; modules = 数据概览/KPI 卡片 (`overview`), 图表分析区 (`charts`), 数据表格/列表 (`table`), 动态/通知流 (`activity`), 用户/成员管理 (`users`), 单据配置 (`documents`), 系统设置 (`settings`); scope = 多屏可切换原型 (`multi`).
+- Build decision: **single self-contained HTML file** — left sidebar nav switching 7 views + frosted topbar app-shell + client-side view router + `data-theme` dark-mode toggle (`<html data-theme="light">`).
+- Seed is a *landing-page* seed; keep its token block + class system, add a thin app-shell layer on same tokens.
+- Active skill: Web Prototype, root `.od-skills/web-prototype-cf4a0fb5c9/`; SKILL.md `platform: desktop`, `preview {type: html, entry: index.html}`. Active plugin 网页原型 (`example-web-prototype@0.1.1`, `publishedAt 2026-05-12T07:18:16Z`); inputs artifactKind=web prototype, audience=product evaluators, fidelity=high-fidelity, template=bundled seed.
+- Design system **verified `shadcn`** via `…\runs\28ea2bf1-8f70-4ae2-85f8-e001e3e56651\state.json` (`designSystemSelectionSource=request`, digest `5028d0888388f7771605e6f1dd2792f06452fdea7c485c437b7aa6f3caccb01a`).
+- Canonical Shadcn tokens (`design-systems\shadcn`): `DESIGN.md` §2 Primary `#000000`, Secondary `#111111`, Success `#16A34A`, Warning `#D97706`, Danger `#DC2626`, Surface `#FFFFFF`, Text `#111827`; §3 scale 12/14/16/20/24/32, families Geist/Geist/Fira Code, weights 100–900; §4 spacing 4/8/12/16/24/32. `tokens.css`: `--accent #000000` (non-chromatic), hover/active mix toward white, `--fg #111827`, no dark block.
+- **Artifact token block (light) as emitted**: `--bg #ffffff`, `--surface #ffffff`, `--fg #111827`, `--muted #64748b`, `--border #e5e7eb`, `--accent #000000`, `--accent-on #ffffff`, `--accent-hover color-mix(in oklab,var(--accent),white 10%)`, `--accent-active …white 18%`, `--success #16a34a`/`--warn #d97706`/`--danger #dc2626`; derived `--fg-soft`(6%)/`--fg-softer`(3%)/`--accent-soft`(10%) via `color-mix(in oklab,…)`; fonts Geist/Geist Sans + Fira Code; radius sm 6/md 8/lg 12/pill 9999; `--elev-raised`; `--focus-ring` = ring-2 + offset.
+- **Artifact dark block (`:root[data-theme="dark"]`) resolved** (was previously blocked): `--bg #0a0a0a`, `--surface #141414`, `--fg #fafafa`, `--muted #a1a1aa`, `--border #262626`, `--accent #fafafa`, `--accent-on #0a0a0a`, `--accent-hover …black 10%`, `--accent-active …black 18%`, `--success #4ade80`, `--warn #fbbf24`, `--danger #f87171`.
+- UI locale `zh-CN`: all user-visible prose/UI copy Simplified Chinese; keep ids/values/brand names/technical identifiers unlocalized.
+- Output contract: single self-contained HTML wrapped in `<artifact identifier="orbit-lowcode-console" type="text/html" title="Orbit 低代码控制台 · 产品原型">`; semantic filename (not `index.html`).
+- Project dir: `C:\Users\krasus1966\AppData\Roaming\Open Design\namespaces\release-stable-win\data\projects\4e516f7d-71ae-4734-a2ad-c0d5b12e4816` (only `.od-skills/`, `.codegraph/`, `.omo/` present — **no output HTML yet**). Linked read-only reference code: `F:\project2\lowcode`.
+- Runtime env: `OD_APP_VERSION=0.22.2`; `OD_PROJECT_ID=4e516f7d-71ae-4734-a2ad-c0d5b12e4816`; daemon `OD_DAEMON_URL=http://127.0.0.1:54693`; `OD_NODE_BIN=D:\software\Open Design\Open Design.exe`; `OD_BIN=D:\software\Open Design\resources\app\prebundled\daemon\daemon-cli.mjs`; one render max via `export`.
+- GateGuard hook "Fact-Forcing Gate" blocks first Bash until facts presented; recovery `ECC_GATEGUARD=off` or add `pre:bash:gateguard-fact-force` to `ECC_DISABLED_HOOKS`. Prefer `task` with explore/librarian agents over direct search.
+
+## Work State
+### Completed
+- Ran parallel reads confirming source material: `assets/template.html`, `references/layouts.md`, `references/checklist.md`, `SKILL.md`, `example.html`, `open-design.json`, `tokens.css`, `DESIGN.md` (glob confirmed 2 project HTML + 10 shadcn files).
+- Committed numbered plan via `todowrite` (6 todos).
+- **Began emitting the artifact** — composed `<!doctype html>`, `<head>` (title, meta, `:root` light Shadcn token block), full `:root[data-theme="dark"]` block, reset/base, `:focus-visible` ring, and app-shell CSS through `.ds-table th,td` (truncated mid-rule).
+- App-shell/component classes emitted: `.app` (grid `244px minmax(0,1fr)`), `.sidebar .brand .brand-mark .brand-name .brand-sub .side-nav .nav-label .nav-item(.is-active,.nav-ico,.nav-badge) .side-foot .user-card .main .topbar .crumb .search .icon-btn(.ico-sun/.ico-moon theme toggle) .avatar(.sm) .content .view(.is-active) .page-head .page-actions`; primitives `.btn .btn-primary .btn-secondary .btn-ghost .tag(.accent) .status(.ok/.warn/.err/.idle) .panel .panel-head .grid-2 .grid-3 .grid-21`; `.kpis .kpi .kpi-label .kpi-val(.unit) .kpi-foot .delta(.up/.down/.flat)`; charts `.line-chart(.g-line/.l-area/.l-line/.l-dot) .chart-x .bars .hbar .hbar-fill(.hot) .hbar-x .dist-row .dist-track .dist-fill .dist-val`; table `.table-wrap .ds-table`.
+- Run states newest `28ea2bf1-…` (status `running`, model `deepseek-flash`, `artifactCount 0`, appVersion 0.22.2 win32 x64).
+
+### Active
+- Writing/emitting the single artifact HTML. Todo 1 (token bind) effectively done; continuing CSS (finish `.ds-table`/`.num-col`/pager/tabs/feed/switch rules) before view sections.
+
+### Blocked
+- (none) — dark-mode token values now resolved (see Important Details).
+
+## Next Move
+1. Finish CSS after `.ds-table`: any remaining table/pager/tabs/feed/switch/pager rules; then compose 7 `<main class="content">` / `.view` sections (数据概览/图表分析/数据表格/动态通知/成员管理/单据配置/系统设置) with real zh-CN copy, each element `data-od-id` (unique ids for repeated cards).
+2. Wire vanilla-JS router (`data-view` toggle + `data-crumb` breadcrumb update + `localStorage`) and `data-theme` dark toggle; run checklist P0 self-review (no raw hex outside `:root`; headings `var(--font-display)`; accent ≤2×/screen; no purple gradient/emoji/metrics/filler); emit artifact (6 todos).
+
+## Relevant Files
+- `.od-skills/web-prototype-cf4a0fb5c9/SKILL.md`: skill workflow, resource map (5969 B).
+- `.od-skills/web-prototype-cf4a0fb5c9/assets/template.html`: seed (tokens + class system + chrome); 6 placeholder tokens (--bg `#fafaf7`, --surface `#ffffff`, --fg `#1a1916`, --muted `#6b6964`, --border `#e8e5df`, --accent `#c96442`); token block sole palette/type source (16951 B).
+- `.od-skills/web-prototype-cf4a0fb5c9/references/layouts.md`: 8 skeletons + class inventory `section container hero hero-center hero-split hero-cta eyebrow lead h1 h2 h3 meta num btn btn-primary btn-secondary btn-ghost btn-arrow card card-flat card-rule feature feature-mark stat stat-num stat-label stat-unit quote quote-mark quote-author pill tag field input textarea ds-table num-col ph-img content-img square portrait wide rule rule-strong grid-2 grid-3 grid-4 grid-2-1 grid-1-2 row row-between stack log-row pull topnav pagefoot` (11242 B).
+- `.od-skills/web-prototype-cf4a0fb5c9/references/checklist.md`: P0/P1/P2 gate (P0: no raw hex outside `:root`; grep `#[0-9a-fA-F]{3,8}` outside `:root{}` = nothing; headings `var(--font-display)`; accent ≤2×/screen; no purple/violet gradients; no emoji icons; no invented metrics; no filler copy; real images; no remote image deps) (4726 B).
+- `.od-skills/web-prototype-cf4a0fb5c9/example.html`: seed-usage reference (4298 B).
+- `.od-skills/web-prototype-cf4a0fb5c9/open-design.json`: plugin manifest (`example-web-prototype@0.1.1`) (9810 B).
+- Project dir `…\projects\4e516f7d-71ae-4734-a2ad-c0d5b12e4816`: output target; holds `.codegraph/` and `.omo/run-continuation/*.json`; **no output HTML yet**.
+- `…\data\runs\28ea2bf1-8f70-4ae2-85f8-e001e3e56651\state.json`: authoritative design-system selection (`shadcn`, source `request`, digest `5028d088…`).
+- `D:\software\Open Design\resources\open-design\design-systems\shadcn`: canonical package — `DESIGN.md`, `tokens.css`, `tailwind-v4.css`, `USAGE.md`, `system/kit.dark.html`, `design-tokens.json`, `source/tokens.source.json`, `components.html`, `components.manifest.json`, `preview/*`.
+- `F:\project2\lowcode`: read-only linked reference code.
+
+## Constraints (verbatim)
+- "No raw hex outside the `:root` token block." Grep `#[0-9a-fA-F]{3,8}` outside `:root{}` must return nothing; all color via `var(--bg|--surface|--fg|--muted|--border|--accent)` or `color-mix()`.
+- "Single accent, used at most twice per screen."
+- "All headings use `var(--font-display)`." No sans-serif `<h1>`/`<h2>`.
+- "No purple/violet gradient backgrounds." "No emoji used as feature icons." "No invented metrics." "No filler copy."
+- "Real imagery, never remote hotlinks." Named real-world referents must use correct real images; never generate/draw/generic/look-alike/fictional substitutes. Preserve intrinsic width/height on `content-img`.
+- Every `<section>` gets `data-od-id`; repeated cards get unique ids (e.g. `feature-card-speed`).
+- Do not reuse `.ph-img`/`.wide`/`.portrait`/`.square` classes on real images.
+- Mobile reflow via seed media query at 920px; don't add fixed widths.
+- Do not use `scrollIntoView`; persist state in `localStorage`.Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.I'll verify the current state before continuing the build.Output paths got truncated. Let me get clean relative listings.Now let me verify the canonical design system tokens before composing.

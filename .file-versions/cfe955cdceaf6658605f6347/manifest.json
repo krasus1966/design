@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "fileName": "orbit-lowcode-console.html",
+  "currentVersionId": "a369a768-ad5a-45ef-ae71-e0fba1aaf614",
+  "entries": [
+    {
+      "id": "f7da2399-ac61-4528-9a7c-72390f756b7d",
+      "fileName": "orbit-lowcode-console.html",
+      "version": 1,
+      "label": "Version 1",
+      "createdAt": 1789050490171,
+      "source": "manual",
+      "prompt": null,
+      "size": 38246,
+      "mime": "text/html; charset=utf-8",
+      "kind": "html",
+      "contentPath": "0001-f7da2399-ac61-4528-9a7c-72390f756b7d.html",
+      "promptSource": "manual",
+      "contentDigest": "e47b28bfdef965e349929dba86371b745027c9682d8d4caf6040b3f5be698a21"
+    },
+    {
+      "id": "f9018d74-83e8-40cf-82aa-c22dacfe901e",
+      "fileName": "orbit-lowcode-console.html",
+      "version": 2,
+      "label": "Version 2",
+      "createdAt": 1789051257285,
+      "source": "ai",
+      "prompt": "Continue the remaining unfinished tasks from the previous run. Do not redo completed work. Focus only on these unfinished todos:\n\n1. [in_progress] HTML head/style: Bind Shadcn slate tokens into :root + :root[data-theme=dark] token blocks (bg/surface/fg/muted/border/accent + semantic success/warn/danger + Geist/Fira Code), all hex confined to token blocks - expect grep for #hex outside token blocks returns nothing\n2. [pending] HTML style: Append app-shell + dashboard CSS layer (.app .sidebar .side-nav .nav-item .topbar .view .page-head .kpi .panel .bars .hbar .feed .status .switch .pager .tabs) after seed rules - expect every class used by the 7 views is defined before use\n3. [pending] HTML main#content: Compose 7 view sections (overview/charts/table/activity/users/documents/settings) with real zh-CN copy, data-od-id on each view, sample-data labeled - expect no filler, no emoji icons\n4. [pending] HTML script: Wire vanilla-JS view router (data-view toggle + data-crumb + localStorage) and dark-mode toggle (data-theme-toggle -> :root[data-theme], persisted) - expect no scrollIntoView, state survives reload\n5. [pending] Self-check vs checklist.md P0 - count accent uses per view, confirm display font on headings, verify no remote image deps and reflow at 920px\n6. [pending] Emit single self-contained HTML wrapped in <artifact identifier=orbit-lowcode-console> - expect one canonical live artifact, nothing after </artifact>\n\nBefore making changes, inspect the current project files as needed. Update TodoWrite as you complete each remaining task.",
+      "size": 76205,
+      "mime": "text/html; charset=utf-8",
+      "kind": "html",
+      "contentPath": "0002-f9018d74-83e8-40cf-82aa-c22dacfe901e.html",
+      "promptSource": "message",
+      "contentDigest": "9ae5742e74e27bec3417ffd5b304fb85d7e71cf4a1bf3364b5d8f2ee51961a6b"
+    },
+    {
+      "id": "a369a768-ad5a-45ef-ae71-e0fba1aaf614",
+      "fileName": "orbit-lowcode-console.html",
+      "version": 3,
+      "label": "Version 3",
+      "createdAt": 1789051554784,
+      "source": "ai",
+      "prompt": "强制要求，必须用中文返回。优化一下菜单，改成多级菜单\n\n<active-workspace-context>\nOpenDesign selected or inferred these workspace contexts for this turn. Treat absolute paths as reference context unless the user explicitly asks to edit them.\n1. file: orbit-lowcode-console.html | path: orbit-lowcode-console.html | absolute: C:\\Users\\krasus1966\\AppData\\Roaming\\Open Design\\namespaces\\release-stable-win\\data\\projects\\4e516f7d-71ae-4734-a2ad-c0d5b12e4816/orbit-lowcode-console.html | tab: orbit-lowcode-console.html\n</active-workspace-context>",
+      "size": 79807,
+      "mime": "text/html; charset=utf-8",
+      "kind": "html",
+      "contentPath": "0003-a369a768-ad5a-45ef-ae71-e0fba1aaf614.html",
+      "contentDigest": "c71011165e006c66c535beffd4d24954c7eea7d1c93c99975213190c041ec3dd",
+      "promptSource": "message"
+    }
+  ]
+}
