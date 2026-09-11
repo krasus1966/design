@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>单据配置 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="documents" data-od-id="view-documents">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>单据配置</h1>
+        <p class="ph-sub">定义单据模板、字段结构与绑定的数据源</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" type="button">从模板导入</button>
+        <button class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          新建单据
+        </button>
+      </div>
+    </div>
+
+    <div class="grid-21">
+      <div class="panel" data-od-id="panel-doctypes">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2>单据类型</h2>
+            <span>共 12 个模板</span>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="ds-table">
+            <thead>
+              <tr>
+                <th>单据名称</th>
+                <th>版本</th>
+                <th>数据源</th>
+                <th class="num">字段数</th>
+                <th>状态</th>
+                <th>更新</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="cell-main"><span class="cm-title">采购申请</span><span class="cm-sub">doc_purchase</span></div></td>
+                <td class="num">V12</td>
+                <td>MySQL 主库</td>
+                <td class="num">24</td>
+                <td><span class="status ok">已发布</span></td>
+                <td class="meta">今天 14:26</td>
+              </tr>
+              <tr>
+                <td><div class="cell-main"><span class="cm-title">费用报销</span><span class="cm-sub">doc_expense</span></div></td>
+                <td class="num">V9</td>
+                <td>MySQL 主库</td>
+                <td class="num">18</td>
+                <td><span class="status ok">已发布</span></td>
+                <td class="meta">昨天 16:40</td>
+              </tr>
+              <tr>
+                <td><div class="cell-main"><span class="cm-title">客户信息补录</span><span class="cm-sub">doc_customer</span></div></td>
+                <td class="num">V4</td>
+                <td>PostgreSQL</td>
+                <td class="num">31</td>
+                <td><span class="status warn">草稿</span></td>
+                <td class="meta">昨天 11:48</td>
+              </tr>
+              <tr>
+                <td><div class="cell-main"><span class="cm-title">设备巡检记录</span><span class="cm-sub">doc_inspection</span></div></td>
+                <td class="num">V2</td>
+                <td>REST API</td>
+                <td class="num">15</td>
+                <td><span class="status err">已停用</span></td>
+                <td class="meta">09-06 09:12</td>
+              </tr>
+              <tr>
+                <td><div class="cell-main"><span class="cm-title">供应商对账</span><span class="cm-sub">doc_supplier</span></div></td>
+                <td class="num">V6</td>
+                <td>MySQL 主库</td>
+                <td class="num">22</td>
+                <td><span class="status ok">已发布</span></td>
+                <td class="meta">09-05 17:30</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel" data-od-id="panel-fields">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2>字段统计</h2>
+            <span>按数据类型分布</span>
+          </div>
+        </div>
+        <div class="dist-row"><span class="muted">文本</span><span class="dist-track"><span class="dist-fill" style="width:44%"></span></span><span class="dist-val">44%</span></div>
+        <div class="dist-row"><span class="muted">数字</span><span class="dist-track"><span class="dist-fill" style="width:26%"></span></span><span class="dist-val">26%</span></div>
+        <div class="dist-row"><span class="muted">日期时间</span><span class="dist-track"><span class="dist-fill" style="width:18%"></span></span><span class="dist-val">18%</span></div>
+        <div class="dist-row"><span class="muted">附件</span><span class="dist-track"><span class="dist-fill" style="width:12%"></span></span><span class="dist-val">12%</span></div>
+        <div class="divider"></div>
+        <div class="row between">
+          <span class="meta">字段总数</span>
+          <span class="num">248</span>
+        </div>
+        <div class="row between">
+          <span class="meta">未使用的字段</span>
+          <span class="num">6</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 单据配置是静态读数：模板表与字段分布都由标记承载，本页没有交互状态。 */
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("documents");
+  </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>角色管理 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="role" data-od-id="view-role">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>角色管理</h1>
+        <p class="ph-sub">维护角色的数据范围与菜单权限；成员数由当前账号数据实时汇总</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" type="button" data-od-id="role-add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          新建角色
+        </button>
+      </div>
+    </div>
+
+    <div class="grid-tl">
+      <div class="panel" data-od-id="panel-role-list">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2>角色</h2>
+            <span id="role-list-note">—</span>
+          </div>
+        </div>
+        <div class="list" id="role-list"></div>
+      </div>
+
+      <div class="panel" data-od-id="panel-role-perm">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2 id="role-name">—</h2>
+            <span id="role-code">—</span>
+          </div>
+        </div>
+        <div class="stat-rows">
+          <div class="row between"><span class="meta">数据范围</span><span id="role-scope">—</span></div>
+          <div class="row between"><span class="meta">成员数</span><span class="num" id="role-members">—</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="panel-head">
+          <div class="ph-title">
+            <h3>菜单权限</h3>
+            <span id="role-perm-count">—</span>
+          </div>
+        </div>
+        <div id="role-perm"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 角色管理：角色列表 + 菜单权限。成员数由账号数据汇总，
+       权限项只列「菜单」级——目录是容器，按钮由菜单自身携带。 */
+    var roleListEl = document.getElementById("role-list");
+    var rolePermEl = document.getElementById("role-perm");
+    var roleSelected = "super";
+    var MENU_TYPE_COUNT = OrbitData.MENU_TYPE_COUNT;
+
+    function renderRoleList() {
+      if (!roleListEl) return;
+      roleListEl.innerHTML = OrbitData.ROLES.map(function (r) {
+        return '<button class="role-row' + (r.code === roleSelected ? " is-active" : "") +
+          '" type="button" data-role="' + r.code + '">' +
+          '<span class="lr-main"><span class="lr-title">' + r.name + "</span>" +
+          '<span class="lr-sub">菜单权限 ' + r.granted.length + " / " + MENU_TYPE_COUNT + "</span></span>" +
+          '<span class="lr-right num">' + OrbitData.roleMembers(r.code) + " 人</span></button>";
+      }).join("");
+      var note = document.getElementById("role-list-note");
+      if (note) note.textContent = "共 " + OrbitData.ROLES.length + " 个角色";
+    }
+
+    function renderRolePerm() {
+      var role = OrbitData.ROLE_BY_CODE[roleSelected];
+      if (!role) return;
+      var nameEl = document.getElementById("role-name");
+      var codeEl = document.getElementById("role-code");
+      var scopeEl = document.getElementById("role-scope");
+      var memEl = document.getElementById("role-members");
+      var cntEl = document.getElementById("role-perm-count");
+      if (nameEl) nameEl.textContent = role.name;
+      if (codeEl) codeEl.textContent = "角色标识 " + role.code;
+      if (scopeEl) scopeEl.textContent = role.scope;
+      if (memEl) memEl.textContent = OrbitData.roleMembers(role.code) + " 人";
+      if (cntEl) cntEl.textContent = "已授予 " + role.granted.length + " / " + MENU_TYPE_COUNT + " 项";
+      if (!rolePermEl) return;
+      rolePermEl.innerHTML = OrbitData.MENUS.filter(function (m) { return m.type === "菜单"; }).map(function (m) {
+        var parent = OrbitData.MENU_BY_CODE[m.parent];
+        var lvl = parent && parent.parent ? " m-l2" : " m-l1";
+        var on = role.granted.indexOf(m.code) !== -1;
+        return '<div class="switch-row"><div class="sr-text' + lvl + '">' +
+          "<span>" + m.name + '</span><span class="sr-sub">' + m.perm + "</span></div>" +
+          '<label class="switch"><input type="checkbox" data-role-perm="' + m.code + '"' + (on ? " checked" : "") +
+          ' aria-label="' + m.name + ' 菜单权限"/><span class="track"></span><span class="knob"></span></label></div>';
+      }).join("");
+    }
+
+    if (roleListEl) {
+      roleListEl.addEventListener("click", function (e) {
+        var row = e.target.closest ? e.target.closest("[data-role]") : null;
+        if (!row) return;
+        roleSelected = row.getAttribute("data-role");
+        renderRoleList();
+        renderRolePerm();
+      });
+    }
+
+    if (rolePermEl) {
+      rolePermEl.addEventListener("change", function (e) {
+        var input = e.target.closest ? e.target.closest("[data-role-perm]") : null;
+        if (!input) return;
+        var role = OrbitData.ROLE_BY_CODE[roleSelected];
+        var code = input.getAttribute("data-role-perm");
+        if (!role) return;
+        if (input.checked) {
+          if (role.granted.indexOf(code) === -1) role.granted.push(code);
+        } else {
+          role.granted = role.granted.filter(function (c) { return c !== code; });
+        }
+        renderRoleList();
+        var cntEl = document.getElementById("role-perm-count");
+        if (cntEl) cntEl.textContent = "已授予 " + role.granted.length + " / " + MENU_TYPE_COUNT + " 项";
+      });
+    }
+
+    /* 成员数来自账号数据——别的视图改了账号，这里跟着变。 */
+    /* 成员数来自账号数据——别的视图改了账号，这里跟着变。 */
+    OrbitBus.on("account", function (p) {
+      if (p) OrbitData.setAccountStatus(p.login, p.status);
+      renderRoleList();
+      renderRolePerm();
+    });
+
+    renderRoleList();
+    renderRolePerm();
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("role");
+  </script>
+</body>
+</html>

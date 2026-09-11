@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>系统设置 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="settings" data-od-id="view-settings">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>系统设置</h1>
+        <p class="ph-sub">工作区信息、通知策略与安全选项</p>
+      </div>
+    </div>
+
+    <div class="card" data-od-id="panel-general">
+      <div class="setting-block">
+        <h3>基本信息</h3>
+        <p class="sb-sub">这些信息会显示在控制台与成员邀请邮件中</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="set-name">平台名称</label>
+            <input id="set-name" class="input" type="text" value="Orbit 低代码平台" />
+          </div>
+          <div class="field">
+            <label for="set-domain">主域名</label>
+            <input id="set-domain" class="input" type="text" value="console.orbit.io" />
+          </div>
+          <div class="field">
+            <label for="set-lang">默认语言</label>
+            <select id="set-lang" class="select">
+              <option>简体中文</option>
+              <option>English</option>
+              <option>日本語</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="set-tz">时区</label>
+            <select id="set-tz" class="select">
+              <option>Asia/Shanghai (UTC+8)</option>
+              <option>Asia/Hong_Kong (UTC+8)</option>
+              <option>UTC (UTC+0)</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label for="set-desc">工作区描述</label>
+            <textarea id="set-desc" class="textarea">面向企业内部流程的低代码平台，承载单据审批、数据填报与系统同步。</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <h3>安全与通知策略</h3>
+        <p class="sb-sub">对整个工作区生效，成员可在个人偏好中覆盖</p>
+        <div class="switch-row">
+          <div class="sr-text"><span>强制两步验证</span><span class="sr-sub">所有管理员登录时需二次验证</span></div>
+          <label class="switch"><input type="checkbox" checked aria-label="强制两步验证"/><span class="track"></span><span class="knob"></span></label>
+        </div>
+        <div class="switch-row">
+          <div class="sr-text"><span>操作审计日志</span><span class="sr-sub">保留 180 天的全部操作记录</span></div>
+          <label class="switch"><input type="checkbox" checked aria-label="操作审计日志"/><span class="track"></span><span class="knob"></span></label>
+        </div>
+        <div class="switch-row">
+          <div class="sr-text"><span>允许成员自助注册</span><span class="sr-sub">关闭后仅能通过邀请加入</span></div>
+          <label class="switch"><input type="checkbox" aria-label="允许成员自助注册"/><span class="track"></span><span class="knob"></span></label>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <h3>危险操作</h3>
+        <p class="sb-sub">以下操作不可撤销，请谨慎执行</p>
+        <div class="row gap-3">
+          <button class="btn btn-secondary" type="button">停用工作区</button>
+          <button class="btn btn-secondary btn-danger" type="button" data-od-id="purge-sources">删除全部数据源</button>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <div class="row between">
+          <span class="meta">最后保存：2026-09-11 14:28</span>
+          <button class="btn btn-primary" type="button">保存更改</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 系统设置是静态读数：表单值与开关都由标记承载，本页没有交互状态。 */
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("settings");
+  </script>
+</body>
+</html>

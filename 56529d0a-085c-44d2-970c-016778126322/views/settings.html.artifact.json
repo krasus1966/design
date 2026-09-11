@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "views/settings.html",
+  "entry": "views/settings.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "createdAt": "2026-09-11T08:34:36.220Z",
+  "updatedAt": "2026-09-11T08:34:36.220Z",
+  "metadata": {
+    "inferred": true,
+    "reconciled": true
+  }
+}

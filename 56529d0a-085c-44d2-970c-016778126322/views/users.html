@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>成员管理 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="users" data-od-id="view-users">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>成员管理</h1>
+        <p class="ph-sub">管理工作区成员、角色与访问权限</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>
+          邀请成员
+        </button>
+      </div>
+    </div>
+
+    <div class="panel" data-od-id="panel-members">
+      <div class="toolbar">
+        <div class="tabs" role="tablist" aria-label="成员分组" id="member-tabs"
+             data-od-id="member-group-tabs">
+          <button class="tab is-active" type="button" role="tab" aria-selected="true" data-filter-value="">全部成员</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="admin">管理员</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="disabled">已停用</button>
+        </div>
+        <span class="grow"></span>
+        <span class="meta" id="member-range">显示 6 / 98 名成员</span>
+      </div>
+
+      <div class="table-scroll">
+        <table class="ds-table" id="member-table">
+          <thead>
+            <tr>
+              <th>成员</th>
+              <th>角色</th>
+              <th>部门</th>
+              <th>最近活跃</th>
+              <th>状态</th>
+              <th><span class="sr-only">操作</span></th>
+            </tr>
+          </thead>
+          <tbody id="member-body">
+            <tr data-tags="admin">
+              <td><div class="row gap-3"><span class="avatar sm" aria-hidden="true">ZS</span><div class="cell-main"><span class="cm-title">张思远</span><span class="cm-sub">zhang@orbit.io</span></div></div></td>
+              <td><span class="tag accent">超级管理员</span></td>
+              <td>研发中心</td>
+              <td class="meta">刚刚</td>
+              <td><span class="status ok">正常</span></td>
+              <td><div class="row-actions"><span class="meta">当前账号</span></div></td>
+            </tr>
+            <tr data-tags="admin">
+              <td><div class="row gap-3"><span class="avatar sm" aria-hidden="true">WY</span><div class="cell-main"><span class="cm-title">王雅琪</span><span class="cm-sub">wang@orbit.io</span></div></div></td>
+              <td><span class="tag">管理员</span></td>
+              <td>财务部</td>
+              <td class="meta">2 分钟前</td>
+              <td><span class="status ok">正常</span></td>
+              <td><div class="row-actions"><button class="btn btn-ghost" type="button" data-member-toggle>停用</button></div></td>
+            </tr>
+            <tr data-tags="approver">
+              <td><div class="row gap-3"><span class="avatar sm" aria-hidden="true">LC</span><div class="cell-main"><span class="cm-title">李承宇</span><span class="cm-sub">li@orbit.io</span></div></div></td>
+              <td><span class="tag">审批人</span></td>
+              <td>财务部</td>
+              <td class="meta">1 小时前</td>
+              <td><span class="status ok">正常</span></td>
+              <td><div class="row-actions"><button class="btn btn-ghost" type="button" data-member-toggle>停用</button></div></td>
+            </tr>
+            <tr data-tags="editor">
+              <td><div class="row gap-3"><span class="avatar sm" aria-hidden="true">CH</span><div class="cell-main"><span class="cm-title">陈浩</span><span class="cm-sub">chen@orbit.io</span></div></div></td>
+              <td><span class="tag">编辑者</span></td>
+              <td>财务部</td>
+              <td class="meta">今天 13:02</td>
+              <td><span class="status ok">正常</span></td>
+              <td><div class="row-actions"><button class="btn btn-ghost" type="button" data-member-toggle>停用</button></div></td>
+            </tr>
+            <tr data-tags="editor">
+              <td><div class="row gap-3"><span class="avatar sm" aria-hidden="true">LS</span><div class="cell-main"><span class="cm-title">刘思彤</span><span class="cm-sub">liu@orbit.io</span></div></div></td>
+              <td><span class="tag">编辑者</span></td>
+              <td>市场部</td>
+              <td class="meta">今天 11:48</td>
+              <td><span class="status ok">正常</span></td>
+              <td><div class="row-actions"><button class="btn btn-ghost" type="button" data-member-toggle>停用</button></div></td>
+            </tr>
+            <tr data-tags="viewer disabled">
+              <td><div class="row gap-3"><span class="avatar sm" aria-hidden="true">ZP</span><div class="cell-main"><span class="cm-title">赵鹏</span><span class="cm-sub">zhao@orbit.io</span></div></div></td>
+              <td><span class="tag">只读</span></td>
+              <td>研发中心</td>
+              <td class="meta">3 天前</td>
+              <td><span class="status idle">已停用</span></td>
+              <td><div class="row-actions"><button class="btn btn-ghost" type="button" data-member-toggle>启用</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 成员管理：分组筛选 + 停用 / 启用。
+       状态写回 OrbitData 这份共享账号数据并广播出去，
+       「用户管理」读的是同一份，两个页面不会互相打脸。 */
+    var memberTable = document.getElementById("member-table");
+    var memberRange = document.getElementById("member-range");
+    var memberTabs = document.getElementById("member-tabs");
+    var memberFilter = "";
+    /* 总数由账号数据算出，不再写死。 */
+    var MEMBER_TOTAL = OrbitData.USERS.length;
+
+    function memberRows() {
+      return Array.prototype.slice.call(memberTable.tBodies[0].rows);
+    }
+
+    function refreshMembers() {
+      if (!memberTable) return;
+      var shown = 0;
+      memberRows().forEach(function (row) {
+        var tags = (row.getAttribute("data-tags") || "").split(/\s+/);
+        var on = !memberFilter || tags.indexOf(memberFilter) !== -1;
+        row.hidden = !on;
+        if (on) shown++;
+      });
+      if (memberRange) {
+        memberRange.textContent = memberFilter
+          ? "筛选后 " + shown + " / " + MEMBER_TOTAL + " 名成员"
+          : "显示 " + shown + " / " + MEMBER_TOTAL + " 名成员";
+      }
+    }
+
+    function loginOfRow(row) {
+      var sub = row.querySelector(".cm-sub");
+      return sub ? sub.textContent.trim().replace(/@.*$/, "") : "";
+    }
+
+    /* 把某个账号的状态落到这一行上——不整表重绘，筛选出的分组不会跳。 */
+    function syncMemberRow(login, status) {
+      var email = login + "@orbit.io";
+      memberRows().forEach(function (row) {
+        var sub = row.querySelector(".cm-sub");
+        if (!sub || sub.textContent.trim() !== email) return;
+        var off = status !== "ok";
+        var cell = row.querySelector(".status");
+        var btn = row.querySelector("[data-member-toggle]");
+        if (cell) {
+          cell.className = "status " + (off ? "idle" : "ok");
+          cell.textContent = off ? "已停用" : "正常";
+        }
+        if (btn) btn.textContent = off ? "启用" : "停用";
+        var tags = (row.getAttribute("data-tags") || "").split(/\s+/).filter(function (t) {
+          return t && t !== "disabled";
+        });
+        if (off) tags.push("disabled");
+        row.setAttribute("data-tags", tags.join(" "));
+      });
+    }
+
+    if (memberTabs) {
+      Array.prototype.slice.call(memberTabs.querySelectorAll(".tab")).forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          Array.prototype.slice.call(memberTabs.querySelectorAll(".tab")).forEach(function (t) {
+            var on = t === tab;
+            t.classList.toggle("is-active", on);
+            t.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          memberFilter = tab.getAttribute("data-filter-value") || "";
+          refreshMembers();
+        });
+      });
+    }
+
+    if (memberTable) {
+      memberTable.addEventListener("click", function (e) {
+        var btn = e.target.closest ? e.target.closest("[data-member-toggle]") : null;
+        if (!btn) return;
+        var row = btn.closest("tr");
+        var login = loginOfRow(row);
+        if (!login) return;
+        /* 与「用户管理」同一条规则：当前账号不能停用自己。 */
+        if (login === "zhang") return;
+        var cell = row.querySelector(".status");
+        var next = cell && cell.classList.contains("idle") ? "ok" : "off";
+        OrbitData.setAccountStatus(login, next);
+        syncMemberRow(login, next);
+        refreshMembers();
+        OrbitBus.send("account", { login: login, status: next });
+      });
+    }
+
+    /* 来自「用户管理」或统一入口回传的账号状态。 */
+    /* 来自「用户管理」或统一入口回传的账号状态。
+       先落进本视图的账号数据再改行，两处不会各说各话。 */
+    OrbitBus.on("account", function (p) {
+      if (!p) return;
+      OrbitData.setAccountStatus(p.login, p.status);
+      syncMemberRow(p.login, p.status);
+      refreshMembers();
+    });
+
+    /* 统一入口持有的权威状态——页面刚载入时据此校准一次。 */
+    OrbitBus.on("accounts:state", function (map) {
+      OrbitData.applyAccountState(map);
+      OrbitData.USERS.forEach(function (u) { syncMemberRow(u[1], u[4]); });
+      refreshMembers();
+    });
+
+    refreshMembers();
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("users");
+  </script>
+</body>
+</html>

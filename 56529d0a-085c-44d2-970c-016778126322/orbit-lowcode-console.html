@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orbit 低代码控制台 · 产品原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/orbit.css" />
+  <!-- 本文件只负责 Layout：侧栏、顶栏、内容承载区。
+       内容区里的每个功能都是一份独立文档（views/*.html），按需载入 iframe。
+       视图之间不共享 document，一切跨文档通信走 OrbitBus。 -->
+  <script src="assets/orbit-bus.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" data-od-id="sidebar">
+    <div class="brand" data-od-id="brand">
+      <span class="brand-mark" aria-hidden="true">O</span>
+      <span>
+        <span class="brand-name">Orbit</span>
+        <span class="brand-sub">低代码控制台</span>
+      </span>
+    </div>
+
+    <nav class="side-nav" aria-label="主导航">
+      <div class="nav-label" data-menu="workbench">工作台</div>
+      <button class="nav-item is-active" data-view="overview" data-crumb="数据概览" data-menu="dashboard" aria-current="page" data-od-id="nav-overview">
+        <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        数据概览
+      </button>
+
+      <div class="nav-group" data-od-id="nav-group-analytics" data-menu="analytics">
+        <button class="nav-parent" type="button" aria-expanded="true" aria-controls="nav-analytics">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5"/><path d="M12 16V8"/><path d="M17 16v-9"/></svg>
+          数据分析
+          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <div class="nav-sub" id="nav-analytics">
+          <button class="nav-item" data-view="charts" data-crumb="图表分析" data-menu="chart" data-od-id="nav-charts">图表分析</button>
+          <button class="nav-item" data-view="table" data-crumb="数据表格" data-menu="doc" data-od-id="nav-table">数据表格</button>
+        </div>
+      </div>
+
+      <button class="nav-item" data-view="activity" data-crumb="动态通知" data-menu="notice" data-od-id="nav-activity">
+        <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        动态通知
+        <span class="nav-badge num" id="activity-badge">5</span>
+      </button>
+
+      <div class="nav-label" data-menu="manage">管理</div>
+
+      <div class="nav-group" data-od-id="nav-group-business" data-menu="business">
+        <button class="nav-parent" type="button" aria-expanded="false" aria-controls="nav-business">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          业务管理
+          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <div class="nav-sub" id="nav-business" hidden>
+          <button class="nav-item" data-view="users" data-crumb="成员管理" data-menu="member" data-od-id="nav-users">成员管理</button>
+          <button class="nav-item" data-view="documents" data-crumb="单据配置" data-menu="docConfig" data-od-id="nav-documents">单据配置</button>
+        </div>
+      </div>
+
+      <button class="nav-item" data-view="settings" data-crumb="系统设置" data-menu="setting" data-od-id="nav-settings">
+        <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        系统设置
+      </button>
+
+      <div class="nav-group" data-od-id="nav-group-sysdata" data-menu="sysdata">
+        <button class="nav-parent" type="button" aria-expanded="false" aria-controls="nav-sysdata">
+          <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
+          系统数据管理
+          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <div class="nav-sub" id="nav-sysdata" hidden>
+          <button class="nav-item" data-view="dept" data-crumb="组织部门管理" data-menu="dept" data-od-id="nav-dept">组织部门管理</button>
+          <button class="nav-item" data-view="sysuser" data-crumb="用户管理" data-menu="sysuser" data-od-id="nav-sysuser">用户管理</button>
+          <button class="nav-item" data-view="role" data-crumb="角色管理" data-menu="role" data-od-id="nav-role">角色管理</button>
+          <button class="nav-item" data-view="menu" data-crumb="菜单管理" data-menu="menu" data-od-id="nav-menu">菜单管理</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="side-foot">
+      <div class="user-card" data-od-id="user-card">
+        <span class="avatar" aria-hidden="true">ZS</span>
+        <span>
+          <span class="u-name">张思远</span>
+          <span class="u-mail">zhang@orbit.io</span>
+        </span>
+        <button class="icon-btn u-out" type="button" title="退出登录" aria-label="退出登录" style="border:0;background:transparent;width:auto;height:auto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <nav class="crumb" aria-label="面包屑">
+        <span>Orbit 控制台</span>
+        <span class="crumb-sep">/</span>
+        <span id="crumb">数据概览</span>
+      </nav>
+
+      <div class="search" role="search" data-od-id="global-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="global-search" type="search" autocomplete="off"
+               placeholder="搜索单据编号或名称，回车跳转" aria-label="全局搜索单据" />
+        <kbd>⌘K</kbd>
+      </div>
+
+      <button class="icon-btn" type="button" data-theme-toggle data-od-id="theme-toggle" aria-label="切换深浅色主题" title="切换深浅色主题">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+      <span class="avatar" aria-hidden="true">ZS</span>
+    </header>
+
+    <!-- 内容区：每个功能视图一个 iframe，首次进入时创建，之后靠 hidden 切换，
+         视图内部状态（筛选、翻页、选中的部门）因此不会在切页时丢失。 -->
+    <div class="content" id="view-host"></div>
+  </div>
+</div>
+
+<script src="assets/orbit-data.js"></script>
+<script>
+  (function () {
+    "use strict";
+    var doc = document;
+    var VIEW_KEY = "orbit.view";
+    var DEFAULT_VIEW = "overview";
+
+    var navItems = Array.prototype.slice.call(doc.querySelectorAll(".nav-item[data-view]"));
+    var navGroups = Array.prototype.slice.call(doc.querySelectorAll(".nav-group"));
+    var crumb = doc.getElementById("crumb");
+    var host = doc.getElementById("view-host");
+    var badge = doc.getElementById("activity-badge");
+    var gSearch = doc.getElementById("global-search");
+
+    var frames = {};   /* 视图名 → iframe */
+    var lives = {};    /* 视图名 → 是否已发过 ready */
+    var queue = {};    /* 视图名 → ready 之前排队的消息 */
+    var readAll = false; /* 「全部已读」是否发生过——迟到的视图据此补发 */
+
+    function itemFor(name) {
+      for (var i = 0; i < navItems.length; i++) {
+        if (navItems[i].getAttribute("data-view") === name) return navItems[i];
+      }
+      return null;
+    }
+    function viewExists(name) { return !!itemFor(name); }
+
+    function openGroup(group, open) {
+      var parent = group.querySelector(".nav-parent");
+      var sub = group.querySelector(".nav-sub");
+      if (!parent || !sub) return;
+      parent.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) sub.removeAttribute("hidden"); else sub.setAttribute("hidden", "");
+    }
+    function toggleGroup(group) {
+      var parent = group.querySelector(".nav-parent");
+      if (!parent) return;
+      openGroup(group, parent.getAttribute("aria-expanded") !== "true");
+    }
+    function setGroupsFor(name) {
+      navGroups.forEach(function (group) {
+        var has = !!group.querySelector('.nav-item[data-view="' + name + '"]');
+        group.classList.toggle("has-active", has);
+        if (has) openGroup(group, true);
+      });
+    }
+
+    function deliver(name, type, payload) {
+      var f = frames[name];
+      if (!f || !f.contentWindow) return;
+      try {
+        f.contentWindow.postMessage(
+          { __orbit: true, type: type, payload: payload === undefined ? null : payload }, "*"
+        );
+      } catch (e) {}
+    }
+    function sendTo(name, type, payload) {
+      if (lives[name]) deliver(name, type, payload);
+      else (queue[name] || (queue[name] = [])).push([type, payload]);
+    }
+
+    function frameFor(name) {
+      if (frames[name]) return frames[name];
+      var item = itemFor(name);
+      var f = doc.createElement("iframe");
+      f.className = "view-frame";
+      /* 主题走 URL 片段：视图文档在首次绘制前就能读到，深色下不闪白。 */
+      f.setAttribute("src", "views/" + name + ".html#theme=" + OrbitBus.currentTheme());
+      f.setAttribute("title", item ? (item.getAttribute("data-crumb") || name) : name);
+      f.hidden = true;
+      host.appendChild(f);
+      frames[name] = f;
+      return f;
+    }
+
+    function reachable(name) {
+      var item = itemFor(name);
+      return !!item && !item.hidden;
+    }
+
+    function setView(name, persist) {
+      if (!viewExists(name) || !reachable(name)) name = DEFAULT_VIEW;
+      Object.keys(frames).forEach(function (k) { frames[k].hidden = k !== name; });
+      frameFor(name).hidden = false;
+
+      var activeCrumb = null;
+      navItems.forEach(function (item) {
+        var on = item.getAttribute("data-view") === name;
+        item.classList.toggle("is-active", on);
+        if (on) {
+          item.setAttribute("aria-current", "page");
+          activeCrumb = item.getAttribute("data-crumb") || item.textContent.trim();
+        } else {
+          item.removeAttribute("aria-current");
+        }
+      });
+      if (crumb && activeCrumb) crumb.textContent = activeCrumb;
+      setGroupsFor(name);
+
+      if (persist) {
+        try { localStorage.setItem(VIEW_KEY, name); } catch (e) {}
+      }
+    }
+
+    /* 把菜单启停落到真实的侧栏节点上；当前入口被停用时退到第一个可见入口，
+       这样"默认入口"永远在，不会把所有菜单关掉之后无处可去。 */
+    function applyMenuVisibility() {
+      Array.prototype.slice.call(doc.querySelectorAll("[data-menu]")).forEach(function (el) {
+        el.hidden = !OrbitData.menuEnabled(el.getAttribute("data-menu"));
+      });
+      var active = navItems.filter(function (i) { return i.classList.contains("is-active"); })[0];
+      if (active && !OrbitData.menuEnabled(active.getAttribute("data-menu"))) {
+        var fallback = DEFAULT_VIEW;
+        for (var i = 0; i < navItems.length; i++) {
+          if (OrbitData.menuEnabled(navItems[i].getAttribute("data-menu"))) {
+            fallback = navItems[i].getAttribute("data-view");
+            break;
+          }
+        }
+        setView(fallback, true);
+      }
+    }
+
+    function setUnread(n) {
+      if (!badge) return;
+      badge.textContent = String(n);
+      badge.style.display = n ? "" : "none";
+    }
+
+    /* ---------- 来自各功能视图的消息 ---------- */
+    OrbitBus.on("ready", function (name) {
+      lives[name] = true;
+      (queue[name] || []).forEach(function (m) { deliver(name, m[0], m[1]); });
+      queue[name] = [];
+      /* 权威状态：菜单启停与账号状态以统一入口持有的那份为准。
+         视图各自载入一份 orbit-data.js，全靠这一步对齐，
+         否则「成员管理」和「用户管理」会各说各话。 */
+      deliver(name, "menus:state", OrbitData.menuStateMap());
+      deliver(name, "accounts:state", OrbitData.accountStateMap());
+      if (readAll) deliver(name, "read:all");
+    });
+
+    OrbitBus.on("nav", function (name) { setView(name, true); });
+
+    OrbitBus.on("badge", function (n) { setUnread(n); });
+
+    OrbitBus.on("read:all", function () {
+      readAll = true;
+      setUnread(0);
+      OrbitBus.broadcast("read:all");
+    });
+
+    OrbitBus.on("account", function (p) {
+      if (!p) return;
+      OrbitData.setAccountStatus(p.login, p.status);
+      OrbitBus.broadcast("account", p);
+    });
+
+    OrbitBus.on("menu", function (p) {
+      if (!p) return;
+      OrbitData.setMenuOn(p.code, p.on);
+      applyMenuVisibility();
+    });
+
+    /* ---------- 外壳自身的交互 ---------- */
+    navItems.forEach(function (item) {
+      item.addEventListener("click", function () { setView(item.getAttribute("data-view"), true); });
+    });
+
+    navGroups.forEach(function (group) {
+      var parent = group.querySelector(".nav-parent");
+      if (parent) parent.addEventListener("click", function () { toggleGroup(group); });
+    });
+
+    Array.prototype.slice.call(doc.querySelectorAll("[data-theme-toggle]")).forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var next = OrbitBus.currentTheme() === "dark" ? "light" : "dark";
+        OrbitBus.setTheme(next);
+        /* 已经载入的视图即时换色，之后新建的视图从 URL 片段拿。 */
+        OrbitBus.broadcast("theme", next);
+      });
+    });
+
+    doc.addEventListener("keydown", function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        if (gSearch) { gSearch.focus(); gSearch.select(); }
+      }
+    });
+
+    /* 全局搜索：回车跳到「数据表格」并把关键词带过去。
+       视图还没载入就排队，ready 之后投递。 */
+    if (gSearch) {
+      gSearch.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter") return;
+        var q = gSearch.value.trim();
+        if (!q) return;
+        frameFor("table");
+        setView("table", true);
+        sendTo("table", "search", q);
+      });
+    }
+
+    /* ---------- Boot ----------
+       未读徽标的初值就是侧栏标记里写着的那个数——只有「动态通知」视图
+       能数清自己的未读条目，它在就绪后会回报真实值。这里不猜。 */
+    var saved = null;
+    try { saved = localStorage.getItem(VIEW_KEY); } catch (e) { saved = null; }
+    setView(saved || DEFAULT_VIEW, false);
+    applyMenuVisibility();
+  })();
+</script>
+</body>
+</html>

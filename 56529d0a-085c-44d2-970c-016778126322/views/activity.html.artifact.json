@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "views/activity.html",
+  "entry": "views/activity.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "createdAt": "2026-09-11T08:42:25.923Z",
+  "updatedAt": "2026-09-11T08:42:25.923Z",
+  "metadata": {
+    "inferred": true,
+    "reconciled": true
+  }
+}

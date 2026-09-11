@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>菜单管理 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="menu" data-od-id="view-menu">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>菜单管理</h1>
+        <p class="ph-sub">维护导航菜单与按钮权限；停用后左侧对应入口立即隐藏</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" type="button" data-od-id="menu-add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          新增菜单
+        </button>
+      </div>
+    </div>
+
+    <div class="panel" data-od-id="panel-menus">
+      <div class="toolbar">
+        <div class="tabs" role="tablist" aria-label="菜单类型" id="menu-tabs" data-od-id="menu-type-tabs">
+          <button class="tab is-active" type="button" role="tab" aria-selected="true" data-filter-value="">全部</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="目录">目录</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="菜单">菜单</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="按钮">按钮</button>
+        </div>
+        <span class="grow"></span>
+        <span class="meta" id="menu-summary">—</span>
+      </div>
+
+      <div class="table-scroll">
+        <table class="ds-table" id="menu-table">
+          <thead>
+            <tr>
+              <th>菜单名称</th>
+              <th>类型</th>
+              <th>权限标识</th>
+              <th class="num">排序</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="menu-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 菜单管理：三层树表 + 启停。
+       停用一条菜单会把统一入口的侧栏对应入口真的隐藏掉——不做"看着能点"的假开关。
+       MENUS 精确镜像左侧导航：目录 = 侧栏分组，菜单 = 可跳转入口，按钮 = 页内动作。 */
+    var menuBody = document.getElementById("menu-body");
+    var menuState = { type: "", collapsed: {}, focus: null };
+
+    function menuRows() {
+      var out = [];
+      var filtering = !!menuState.type;
+      (function walk(parent, level) {
+        OrbitData.MENUS.filter(function (m) { return m.parent === parent; })
+          .sort(function (a, b) { return a.order - b.order; })
+          .forEach(function (m) {
+            /* 按钮挂在菜单下面，菜单挂在目录下面——三层都要走到底，
+               否则「按钮」这个类型筛选点了会是空表。 */
+            if (!filtering || m.type === menuState.type) {
+              out.push({ m: m, level: filtering ? 0 : level });
+            }
+            if (OrbitData.menuHasChildren(m.code) && (filtering || !menuState.collapsed[m.code])) {
+              walk(m.code, level + 1);
+            }
+          });
+      })("", 0);
+      return out;
+    }
+
+    function renderMenuTable() {
+      if (!menuBody) return;
+      menuBody.innerHTML = menuRows().map(function (row) {
+        var m = row.m;
+        var lvl = row.level === 0 ? "" : " m-l" + Math.min(row.level, 3);
+        var hasKids = OrbitData.menuHasChildren(m.code);
+        var open = !menuState.collapsed[m.code];
+        return '<tr data-menu-row="' + m.code + '">' +
+          '<td><div class="m-cell' + lvl + '">' +
+            OrbitData.caretHTML(m.code, m.name, open, "data-menu-caret", hasKids) +
+            '<span class="m-name">' + m.name + "</span></div></td>" +
+          '<td><span class="tag">' + m.type + "</span></td>" +
+          '<td class="meta">' + (m.perm || "—") + "</td>" +
+          '<td class="num">' + m.order + "</td>" +
+          /* 状态用文字表达、启停放进操作列——和「用户管理」同一套表格惯例。
+             若改用开关轨道，34 行会把强调色铺满 2.2% 的视口，越过标准的 1% 上限。 */
+          '<td><span class="status ' + (m.on ? "ok" : "idle") + '">' + (m.on ? "已启用" : "已停用") + "</span></td>" +
+          '<td><div class="row-actions">' + (m.code === "dashboard"
+            ? '<span class="meta">默认入口</span>'
+            : '<button class="btn btn-ghost" type="button" data-menu-toggle="' + m.code + '">' + (m.on ? "停用" : "启用") + "</button>") +
+          "</div></td></tr>";
+      }).join("");
+
+      var on = OrbitData.MENUS.filter(function (m) { return m.on; }).length;
+      var summary = document.getElementById("menu-summary");
+      if (summary) summary.textContent = "已启用 " + on + " / " + OrbitData.MENUS.length + " 项权限";
+
+      if (menuState.focus) {
+        var el = menuBody.querySelector('[data-menu-toggle="' + menuState.focus + '"]');
+        if (el) el.focus();
+        menuState.focus = null;
+      }
+    }
+
+    if (menuBody) {
+      menuBody.addEventListener("click", function (e) {
+        var btn = e.target.closest ? e.target.closest("[data-menu-toggle]") : null;
+        if (!btn) return;
+        var m = OrbitData.MENU_BY_CODE[btn.getAttribute("data-menu-toggle")];
+        if (!m) return;
+        menuState.focus = m.code;
+        OrbitData.setMenuOn(m.code, !m.on);
+        renderMenuTable();
+        /* 侧栏在统一入口那一侧，得把这次启停告诉它。 */
+        OrbitBus.send("menu", { code: m.code, on: m.on });
+      });
+      menuBody.addEventListener("click", function (e) {
+        var caret = e.target.closest ? e.target.closest("[data-menu-caret]") : null;
+        if (!caret) return;
+        var code = caret.getAttribute("data-menu-caret");
+        if (menuState.collapsed[code]) delete menuState.collapsed[code];
+        else menuState.collapsed[code] = true;
+        renderMenuTable();
+      });
+    }
+
+    Array.prototype.slice.call(document.querySelectorAll("#menu-tabs .tab")).forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        Array.prototype.slice.call(document.querySelectorAll("#menu-tabs .tab")).forEach(function (t) {
+          var on = t === tab;
+          t.classList.toggle("is-active", on);
+          t.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        menuState.type = tab.getAttribute("data-filter-value") || "";
+        renderMenuTable();
+      });
+    });
+
+    /* 统一入口持有的权威启停状态——页面刚载入时据此校准一次。 */
+    OrbitBus.on("menus:state", function (map) {
+      if (!map) return;
+      OrbitData.applyMenuState(map);
+      renderMenuTable();
+    });
+
+    renderMenuTable();
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("menu");
+  </script>
+</body>
+</html>

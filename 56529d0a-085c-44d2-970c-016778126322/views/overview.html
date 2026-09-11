@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数据概览 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view is-active" data-view="overview" data-od-id="view-overview">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>数据概览</h1>
+        <p class="ph-sub">实时监控低代码应用的关键指标与近期动态</p>
+      </div>
+      <div class="page-actions">
+        <span class="tag num">本月至今</span>
+        <button class="btn btn-secondary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          导出报表
+        </button>
+        <button class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          新建应用
+        </button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi" data-od-id="kpi-apps">
+        <span class="kpi-label">应用总数</span>
+        <span class="kpi-val num">128<span class="unit">个</span></span>
+        <div class="kpi-foot"><span class="meta">较上月</span><span class="delta up num">↑ 12 个</span></div>
+      </div>
+      <div class="kpi" data-od-id="kpi-users">
+        <span class="kpi-label">活跃填报人</span>
+        <span class="kpi-val num">3,482<span class="unit">人</span></span>
+        <div class="kpi-foot"><span class="meta">较上月同期</span><span class="delta up num">↑ 8.4%</span></div>
+      </div>
+      <div class="kpi" data-od-id="kpi-orders">
+        <span class="kpi-label">本月单据 · 9月1–11日</span>
+        <span class="kpi-val num">10,078<span class="unit">张</span></span>
+        <div class="kpi-foot"><span class="meta">较上月同期</span><span class="delta up num">↑ 5.2%</span></div>
+      </div>
+      <div class="kpi" data-od-id="kpi-success">
+        <span class="kpi-label">流程成功率</span>
+        <span class="kpi-val num">98.4<span class="unit">%</span></span>
+        <div class="kpi-foot"><span class="meta">较上月</span><span class="delta down num">↓ 0.6%</span></div>
+      </div>
+    </div>
+
+    <div class="grid-21">
+      <div class="panel" data-od-id="panel-trend">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2>单据提交趋势</h2>
+            <span>9月1日–11日 · 单位：张</span>
+          </div>
+          <span class="tag">峰值 1,284</span>
+        </div>
+        <div class="line-wrap">
+          <svg class="line-chart" viewBox="0 0 720 200" preserveAspectRatio="none" role="img"
+               aria-label="9月1日至11日每日单据提交量，从 682 张升至 1,284 张">
+            <path class="l-area" d="M4,119 L75,115 L146,117 L218,100 L289,105 L360,90 L431,94 L502,81 L574,85 L645,72 L716,54 L716,192 L4,192 Z"/>
+            <path class="l-line" vector-effect="non-scaling-stroke" d="M4,119 L75,115 L146,117 L218,100 L289,105 L360,90 L431,94 L502,81 L574,85 L645,72 L716,54"/>
+          </svg>
+          <span class="line-peak" title="9月11日 · 1,284 张"></span>
+        </div>
+        <div class="chart-x">
+          <span class="meta">1日</span><span class="meta">3日</span><span class="meta">5日</span><span class="meta">7日</span><span class="meta">9日</span><span class="meta">11日</span>
+        </div>
+      </div>
+
+      <div class="panel" data-od-id="panel-sources">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2>数据源分布</h2>
+            <span>按写入量占比</span>
+          </div>
+        </div>
+        <div class="dist-row"><span class="muted">MySQL 主库</span><span class="dist-track"><span class="dist-fill" style="width:42%"></span></span><span class="dist-val">42%</span></div>
+        <div class="dist-row"><span class="muted">PostgreSQL</span><span class="dist-track"><span class="dist-fill" style="width:28%"></span></span><span class="dist-val">28%</span></div>
+        <div class="dist-row"><span class="muted">REST API</span><span class="dist-track"><span class="dist-fill" style="width:18%"></span></span><span class="dist-val">18%</span></div>
+        <div class="dist-row"><span class="muted">对象存储</span><span class="dist-track"><span class="dist-fill" style="width:12%"></span></span><span class="dist-val">12%</span></div>
+      </div>
+    </div>
+
+    <div class="panel" data-od-id="panel-recent">
+      <div class="panel-head">
+        <div class="ph-title">
+          <h2>最近动态</h2>
+          <span>团队与系统的实时事件</span>
+        </div>
+        <button class="btn btn-ghost" type="button" data-nav="activity">查看全部</button>
+      </div>
+      <div class="feed">
+        <div class="feed-item is-fresh">
+          <span class="feed-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span>
+          <div class="feed-body"><span class="fb-text">王雅琪 发布了单据「采购申请 V12」</span><span class="fb-sub">等待 李承宇 审批 · ¥ 86,400</span></div>
+          <span class="feed-time">9 分钟前</span>
+        </div>
+        <div class="feed-item is-fresh">
+          <span class="feed-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div class="feed-body"><span class="fb-text">陈浩 的「差旅报销单」已完成审批</span><span class="fb-sub">流程结束 · 抄送财务组</span></div>
+          <span class="feed-time">1 小时前</span>
+        </div>
+        <div class="feed-item is-fresh">
+          <span class="feed-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+          <div class="feed-body"><span class="fb-text">「设备巡检记录」被驳回</span><span class="fb-sub">原因：缺少现场照片</span></div>
+          <span class="feed-time">4 小时前</span>
+        </div>
+        <div class="feed-item is-fresh">
+          <span class="feed-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></span>
+          <div class="feed-body"><span class="fb-text">数据源「MySQL 主库」同步完成</span><span class="fb-sub">写入 1,204 行 · 耗时 3.2s</span></div>
+          <span class="feed-time">5 小时前</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 数据概览是静态读数：KPI、趋势线、数据源分布都由标记承载。
+       页内唯一的动作是「查看全部」跳转到动态通知，那条跳转由
+       orbit-bus.js 的公共胶水处理（[data-nav] 声明式跳转）。 */
+
+    /* 通知在「动态通知」页被全部标记已读后，这里的未读点也要跟着灭。 */
+    OrbitBus.on("read:all", function () {
+      Array.prototype.slice.call(document.querySelectorAll(".feed-item.is-fresh")).forEach(function (el) {
+        el.classList.remove("is-fresh");
+      });
+    });
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("overview");
+  </script>
+</body>
+</html>

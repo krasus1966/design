@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>组织部门管理 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="dept" data-od-id="view-dept">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>组织部门管理</h1>
+        <p class="ph-sub">维护组织架构层级与各部门负责人；人数由当前账号数据实时汇总</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" type="button" data-od-id="dept-add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          新增部门
+        </button>
+      </div>
+    </div>
+
+    <div class="grid-tl">
+      <div class="panel" data-od-id="panel-dept-tree">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2>组织架构</h2>
+            <span id="dept-tree-note">—</span>
+          </div>
+        </div>
+        <div class="tree" id="dept-tree" role="tree" aria-label="组织架构"></div>
+      </div>
+
+      <div class="panel" data-od-id="panel-dept-detail">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2 id="dept-name">—</h2>
+            <span id="dept-path">—</span>
+          </div>
+          <span class="tag" id="dept-leader">—</span>
+        </div>
+        <div id="dept-detail"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 组织部门管理：可展开的部门树 + 部门详情。
+       人数由 OrbitData.USERS 实时汇总，没有第二套写死的汇总值。 */
+    var D = OrbitData;
+    var deptTree = document.getElementById("dept-tree");
+    var deptSelected = "RD";
+    var deptCollapsed = {};
+
+    function renderDeptTree() {
+      if (!deptTree) return;
+      var html = "";
+      (function walk(parent) {
+        D.deptChildren(parent).forEach(function (d) {
+          var kids = D.deptChildren(d.code);
+          var open = !deptCollapsed[d.code];
+          html += '<div class="tree-row' + (d.code === deptSelected ? " is-active" : "") +
+                  '" role="treeitem" tabindex="0" aria-selected="' + (d.code === deptSelected) +
+                  '" data-dept="' + d.code + '">' +
+                  D.caretHTML(d.code, d.name, open, "data-dept-caret", kids.length > 0) +
+                  "<span>" + d.name + '</span><span class="t-count">' + D.deptCount(d.code) + "</span></div>";
+          if (kids.length && open) {
+            html += '<div class="tree-children" role="group">';
+            walk(d.code);
+            html += "</div>";
+          }
+        });
+      })("");
+      deptTree.innerHTML = html;
+      var note = document.getElementById("dept-tree-note");
+      if (note) note.textContent = "共 " + D.DEPTS.length + " 个部门 · " + D.USERS.length + " 名成员";
+    }
+
+    function renderDeptDetail() {
+      var d = D.DEPT_BY_CODE[deptSelected];
+      if (!d) return;
+      var nameEl = document.getElementById("dept-name");
+      var pathEl = document.getElementById("dept-path");
+      var leaderEl = document.getElementById("dept-leader");
+      var box = document.getElementById("dept-detail");
+      if (nameEl) nameEl.textContent = d.name;
+      if (pathEl) pathEl.textContent = D.deptPath(d.code);
+      if (leaderEl) leaderEl.textContent = "负责人 " + d.leader;
+      if (!box) return;
+
+      var html = '<div class="stat-rows">' +
+        D.statRow("部门编码", d.code) +
+        D.statRow("直属成员", D.deptDirect(d.code) + " 人") +
+        D.statRow("含下级成员", D.deptCount(d.code) + " 人") +
+        "</div>";
+
+      var kids = D.deptChildren(d.code);
+      if (kids.length) {
+        /* 分布条长度由人数与最大值算出，不写百分比魔数。 */
+        var max = Math.max.apply(null, kids.map(function (k) { return D.deptCount(k.code); }));
+        html += '<div class="divider"></div><div class="panel-head"><div class="ph-title"><h3>下级部门</h3>' +
+                "<span>按人数排序</span></div></div>";
+        kids.slice().sort(function (a, b) { return D.deptCount(b.code) - D.deptCount(a.code); }).forEach(function (k) {
+          var c = D.deptCount(k.code);
+          html += '<div class="dist-row"><span class="muted">' + k.name + '</span>' +
+                  '<span class="dist-track"><span class="dist-fill" style="width:' + (c / max * 100).toFixed(1) + '%"></span></span>' +
+                  '<span class="dist-val">' + c + "</span></div>";
+        });
+      }
+
+      var members = D.USERS.filter(function (u) { return u[2] === d.code; });
+      if (members.length) {
+        html += '<div class="divider"></div><div class="panel-head"><div class="ph-title"><h3>部门成员</h3>' +
+                "<span>显示 " + Math.min(8, members.length) + " / 共 " + members.length + " 人</span></div></div>";
+        members.slice(0, 8).forEach(function (u) {
+          var st = D.USER_STATUS[u[4]];
+          html += '<div class="list-row"><div class="lr-main"><span class="lr-title">' + u[0] +
+                  '</span><span class="lr-sub">' + u[1] + "@orbit.io</span></div>" +
+                  '<span class="lr-right"><span class="tag">' + D.ROLE_BY_CODE[u[3]].name +
+                  '</span><span class="status ' + st.cls + '">' + st.label + "</span></span></div>";
+        });
+      }
+      box.innerHTML = html;
+    }
+
+    if (deptTree) {
+      deptTree.addEventListener("click", function (e) {
+        var caret = e.target.closest ? e.target.closest("[data-dept-caret]") : null;
+        if (caret) {
+          var cc = caret.getAttribute("data-dept-caret");
+          if (deptCollapsed[cc]) delete deptCollapsed[cc]; else deptCollapsed[cc] = true;
+          renderDeptTree();
+          return;
+        }
+        var row = e.target.closest ? e.target.closest("[data-dept]") : null;
+        if (!row) return;
+        deptSelected = row.getAttribute("data-dept");
+        renderDeptTree();
+        renderDeptDetail();
+        var again = deptTree.querySelector('[data-dept="' + deptSelected + '"]');
+        if (again) again.focus();
+      });
+      deptTree.addEventListener("keydown", function (e) {
+        if (["Enter", " ", "ArrowRight", "ArrowLeft"].indexOf(e.key) === -1) return;
+        var row = e.target.closest ? e.target.closest("[data-dept]") : null;
+        if (!row) return;
+        var code = row.getAttribute("data-dept");
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          deptSelected = code;
+          renderDeptTree();
+          renderDeptDetail();
+        } else {
+          if (!row.querySelector("[data-dept-caret]")) return;
+          e.preventDefault();
+          if (e.key === "ArrowRight") delete deptCollapsed[code]; else deptCollapsed[code] = true;
+          renderDeptTree();
+        }
+        var again = deptTree.querySelector('[data-dept="' + code + '"]');
+        if (again) again.focus();
+      });
+    }
+
+    /* 别的视图改了账号状态，部门人数也要跟着变——同一份 USERS。 */
+    /* 别的视图改了账号状态，部门人数与成员列表都要跟着变。
+       本视图是从 OrbitData.USERS 读的，所以必须先落数据再重绘。 */
+    OrbitBus.on("account", function (p) {
+      if (p) OrbitData.setAccountStatus(p.login, p.status);
+      renderDeptTree();
+      renderDeptDetail();
+    });
+
+    renderDeptTree();
+    renderDeptDetail();
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("dept");
+  </script>
+</body>
+</html>

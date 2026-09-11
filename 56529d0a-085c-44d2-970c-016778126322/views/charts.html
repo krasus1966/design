@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>图表分析 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="charts" data-od-id="view-charts">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>图表分析</h1>
+        <p class="ph-sub">按月份、流程类型与部门维度分析业务数据</p>
+      </div>
+      <div class="page-actions">
+        <div class="tabs" role="tablist" aria-label="统计周期" id="series-tabs" data-od-id="series-range-tabs">
+          <button class="tab" type="button" role="tab" aria-selected="false" data-series="week">周</button>
+          <button class="tab is-active" type="button" role="tab" aria-selected="true" data-series="month">月</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-series="quarter">季</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" data-od-id="panel-monthly">
+      <div class="panel-head">
+        <div class="ph-title">
+          <h2>单据量对比</h2>
+          <span id="series-note">1–8月 · 单位：张 · 深色为最近完整月</span>
+        </div>
+      </div>
+      <div class="bars" id="series-bars" style="--max:19860">
+        <div class="hbar"><div class="hbar-slot" style="--v:13240"><span class="hbar-fill"></span><span class="hbar-val">13,240</span></div><span class="hbar-x">1月</span></div>
+        <div class="hbar"><div class="hbar-slot" style="--v:9480"><span class="hbar-fill"></span><span class="hbar-val">9,480</span></div><span class="hbar-x">2月</span></div>
+        <div class="hbar"><div class="hbar-slot" style="--v:15360"><span class="hbar-fill"></span><span class="hbar-val">15,360</span></div><span class="hbar-x">3月</span></div>
+        <div class="hbar"><div class="hbar-slot" style="--v:16720"><span class="hbar-fill"></span><span class="hbar-val">16,720</span></div><span class="hbar-x">4月</span></div>
+        <div class="hbar"><div class="hbar-slot" style="--v:14880"><span class="hbar-fill"></span><span class="hbar-val">14,880</span></div><span class="hbar-x">5月</span></div>
+        <div class="hbar"><div class="hbar-slot" style="--v:17410"><span class="hbar-fill"></span><span class="hbar-val">17,410</span></div><span class="hbar-x">6月</span></div>
+        <div class="hbar"><div class="hbar-slot" style="--v:18930"><span class="hbar-fill"></span><span class="hbar-val">18,930</span></div><span class="hbar-x">7月</span></div>
+        <div class="hbar"><div class="hbar-slot" style="--v:19860"><span class="hbar-fill hot"></span><span class="hbar-val">19,860</span></div><span class="hbar-x">8月</span></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel" data-od-id="panel-types">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2>流程类型占比</h2>
+            <span>全部已提交单据</span>
+          </div>
+        </div>
+        <div class="dist-row"><span class="muted">审批流程</span><span class="dist-track"><span class="dist-fill" style="width:38%"></span></span><span class="dist-val">38%</span></div>
+        <div class="dist-row"><span class="muted">数据填报</span><span class="dist-track"><span class="dist-fill" style="width:27%"></span></span><span class="dist-val">27%</span></div>
+        <div class="dist-row"><span class="muted">数据同步</span><span class="dist-track"><span class="dist-fill" style="width:21%"></span></span><span class="dist-val">21%</span></div>
+        <div class="dist-row"><span class="muted">消息通知</span><span class="dist-track"><span class="dist-fill" style="width:14%"></span></span><span class="dist-val">14%</span></div>
+      </div>
+
+      <div class="panel" data-od-id="panel-dept">
+        <div class="panel-head">
+          <div class="ph-title">
+            <h2>部门活跃度</h2>
+            <span>按操作次数排序</span>
+          </div>
+        </div>
+        <div class="list">
+          <div class="list-row"><div class="lr-main"><span class="lr-title">研发中心</span><span class="lr-sub">42 名成员</span></div><span class="lr-right num">8,912</span></div>
+          <div class="list-row"><div class="lr-main"><span class="lr-title">财务部</span><span class="lr-sub">18 名成员</span></div><span class="lr-right num">5,204</span></div>
+          <div class="list-row"><div class="lr-main"><span class="lr-title">市场部</span><span class="lr-sub">26 名成员</span></div><span class="lr-right num">3,671</span></div>
+          <div class="list-row"><div class="lr-main"><span class="lr-title">人力资源</span><span class="lr-sub">12 名成员</span></div><span class="lr-right num">2,338</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 单据量对比：周 / 月 / 季。三套数据同源于月度序列，季值由月值相加得出，
+       不另造一套数字。条形长度由 --v / --max 算出，没有手写百分比。 */
+    var SERIES = {
+      week: {
+        note: "近 8 个完整周 · 单位：张 · 深色为最近一周",
+        labels: ["8周前", "7周前", "6周前", "5周前", "4周前", "3周前", "2周前", "上周"],
+        values: [4300, 4480, 4620, 4780, 4950, 5120, 5310, 5639]
+      },
+      month: {
+        note: "1–8月 · 单位：张 · 深色为最近完整月",
+        labels: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月"],
+        values: [13240, 9480, 15360, 16720, 14880, 17410, 18930, 19860]
+      },
+      quarter: {
+        note: "近 6 个完整季 · 单位：张 · 深色为最近一季",
+        labels: ["25Q1", "25Q2", "25Q3", "25Q4", "26Q1", "26Q2"],
+        values: [26900, 28600, 30400, 34700, 38080, 49010]
+      }
+    };
+
+    var barsEl = document.getElementById("series-bars");
+    var noteEl = document.getElementById("series-note");
+    var tabsEl = document.getElementById("series-tabs");
+
+    function renderSeries(key) {
+      var s = SERIES[key];
+      if (!s || !barsEl) return;
+      var max = Math.max.apply(null, s.values);
+      barsEl.style.setProperty("--max", String(max));
+      var html = "";
+      var spoken = [];
+      for (var i = 0; i < s.values.length; i++) {
+        var last = i === s.values.length - 1;
+        html += '<div class="hbar"><div class="hbar-slot" style="--v:' + s.values[i] + '">' +
+                  '<span class="hbar-fill' + (last ? " hot" : "") + '"></span>' +
+                  '<span class="hbar-val">' + OrbitData.fmt(s.values[i]) + "</span>" +
+                '</div><span class="hbar-x">' + s.labels[i] + "</span></div>";
+        spoken.push(s.labels[i] + " " + OrbitData.fmt(s.values[i]) + " 张");
+      }
+      barsEl.innerHTML = html;
+      barsEl.setAttribute("role", "img");
+      barsEl.setAttribute("aria-label", s.note.replace(/ · /g, "，") + "。" + spoken.join("，") + "。");
+      if (noteEl) noteEl.textContent = s.note;
+    }
+
+    if (tabsEl) {
+      Array.prototype.slice.call(tabsEl.querySelectorAll(".tab")).forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          Array.prototype.slice.call(tabsEl.querySelectorAll(".tab")).forEach(function (t) {
+            var on = t === tab;
+            t.classList.toggle("is-active", on);
+            t.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          renderSeries(tab.getAttribute("data-series"));
+        });
+      });
+    }
+
+    renderSeries("month");
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("charts");
+  </script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数据表格 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="table" data-od-id="view-table">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>数据表格</h1>
+        <p class="ph-sub">最近 21 条单据，支持筛选、检索与分页</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          新建单据
+        </button>
+      </div>
+    </div>
+
+    <div class="panel" data-od-id="panel-table">
+      <div class="toolbar">
+        <div class="tabs" role="tablist" aria-label="单据状态" id="doc-tabs"
+             data-od-id="doc-status-tabs">
+          <button class="tab is-active" type="button" role="tab" aria-selected="true" data-filter-value="">全部</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="pending">进行中</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="done">已完成</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="rejected">已驳回</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="draft">草稿</button>
+        </div>
+        <span class="grow"></span>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input class="input" type="search" id="doc-search" placeholder="搜索单据编号或名称" aria-label="搜索单据" autocomplete="off" />
+        </div>
+        <select class="select" id="doc-type" aria-label="按类型筛选" style="width:auto">
+          <option value="">全部类型</option>
+          <option value="approval">审批流程</option>
+          <option value="form">数据填报</option>
+          <option value="sync">数据同步</option>
+        </select>
+      </div>
+
+      <div class="table-scroll">
+        <table class="ds-table" id="doc-table">
+          <thead>
+            <tr>
+              <th>单据编号</th>
+              <th>名称</th>
+              <th>类型</th>
+              <th>提交人</th>
+              <th class="num">金额</th>
+              <th>状态</th>
+              <th>更新时间</th>
+            </tr>
+          </thead>
+          <tbody id="doc-body">
+            <tr data-tags="pending approval">
+              <td class="num ident">SO-20512</td>
+              <td><div class="cell-main"><span class="cm-title">采购申请 V12</span><span class="cm-sub">财务组 · 审批</span></div></td>
+              <td>审批流程</td>
+              <td>王雅琪</td>
+              <td class="num">¥ 86,400</td>
+              <td><span class="status warn">进行中</span></td>
+              <td class="meta">09-11 14:26</td>
+            </tr>
+            <tr data-tags="done approval">
+              <td class="num ident">SO-20511</td>
+              <td><div class="cell-main"><span class="cm-title">差旅报销单</span><span class="cm-sub">财务组 · 审批</span></div></td>
+              <td>审批流程</td>
+              <td>陈浩</td>
+              <td class="num">¥ 4,210</td>
+              <td><span class="status ok">已完成</span></td>
+              <td class="meta">09-11 13:02</td>
+            </tr>
+            <tr data-tags="done form">
+              <td class="num ident">SO-20510</td>
+              <td><div class="cell-main"><span class="cm-title">客户信息补录</span><span class="cm-sub">市场部 · 填报</span></div></td>
+              <td>数据填报</td>
+              <td>刘思彤</td>
+              <td class="num">—</td>
+              <td><span class="status ok">已完成</span></td>
+              <td class="meta">09-11 11:48</td>
+            </tr>
+            <tr data-tags="rejected form">
+              <td class="num ident">SO-20509</td>
+              <td><div class="cell-main"><span class="cm-title">设备巡检记录</span><span class="cm-sub">研发中心 · 填报</span></div></td>
+              <td>数据填报</td>
+              <td>赵鹏</td>
+              <td class="num">—</td>
+              <td><span class="status err">已驳回</span></td>
+              <td class="meta">09-11 10:15</td>
+            </tr>
+            <tr data-tags="done sync">
+              <td class="num ident">SO-20508</td>
+              <td><div class="cell-main"><span class="cm-title">供应商对账</span><span class="cm-sub">财务组 · 同步</span></div></td>
+              <td>数据同步</td>
+              <td>系统</td>
+              <td class="num">¥ 132,900</td>
+              <td><span class="status ok">已完成</span></td>
+              <td class="meta">09-11 09:30</td>
+            </tr>
+            <tr data-tags="pending approval">
+              <td class="num ident">SO-20507</td>
+              <td><div class="cell-main"><span class="cm-title">入职材料审批</span><span class="cm-sub">人力资源 · 审批</span></div></td>
+              <td>审批流程</td>
+              <td>李承宇</td>
+              <td class="num">—</td>
+              <td><span class="status warn">进行中</span></td>
+              <td class="meta">09-10 18:22</td>
+            </tr>
+            <tr data-tags="draft form">
+              <td class="num ident">SO-20506</td>
+              <td><div class="cell-main"><span class="cm-title">库存盘点结果</span><span class="cm-sub">研发中心 · 填报</span></div></td>
+              <td>数据填报</td>
+              <td>周敏</td>
+              <td class="num">—</td>
+              <td><span class="status idle">草稿</span></td>
+              <td class="meta">09-10 16:07</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pager">
+        <span class="meta" id="doc-range">显示 1–7 条，共 21 条</span>
+        <div class="pager-pages" id="doc-pages">
+          <button class="page-btn" type="button" aria-label="上一页" disabled>‹</button>
+          <button class="page-btn is-active" type="button">1</button>
+          <button class="page-btn" type="button">2</button>
+          <button class="page-btn" type="button">3</button>
+          <button class="page-btn" type="button" aria-label="下一页">›</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 数据表格：状态页签 / 类型下拉 / 检索 / 分页。21 条记录真实可翻，7 条一页。 */
+    var DOCS = [
+      { id: "SO-20512", title: "采购申请 V12",   org: "财务组",   kind: "审批", type: "approval", typeLabel: "审批流程", who: "王雅琪", amount: "¥ 86,400",  status: "pending",  time: "09-11 14:26" },
+      { id: "SO-20511", title: "差旅报销单",     org: "财务组",   kind: "审批", type: "approval", typeLabel: "审批流程", who: "陈浩",   amount: "¥ 4,210",   status: "done",     time: "09-11 13:02" },
+      { id: "SO-20510", title: "客户信息补录",   org: "市场部",   kind: "填报", type: "form",     typeLabel: "数据填报", who: "刘思彤", amount: "—",         status: "done",     time: "09-11 11:48" },
+      { id: "SO-20509", title: "设备巡检记录",   org: "研发中心", kind: "填报", type: "form",     typeLabel: "数据填报", who: "赵鹏",   amount: "—",         status: "rejected", time: "09-11 10:15" },
+      { id: "SO-20508", title: "供应商对账",     org: "财务组",   kind: "同步", type: "sync",     typeLabel: "数据同步", who: "系统",   amount: "¥ 132,900", status: "done",     time: "09-11 09:30" },
+      { id: "SO-20507", title: "入职材料审批",   org: "人力资源", kind: "审批", type: "approval", typeLabel: "审批流程", who: "李承宇", amount: "—",         status: "pending",  time: "09-10 18:22" },
+      { id: "SO-20506", title: "库存盘点结果",   org: "研发中心", kind: "填报", type: "form",     typeLabel: "数据填报", who: "周敏",   amount: "—",         status: "draft",    time: "09-10 16:07" },
+      { id: "SO-20505", title: "市场活动预算申请", org: "市场部", kind: "审批", type: "approval", typeLabel: "审批流程", who: "刘思彤", amount: "¥ 58,000",  status: "done",     time: "09-10 15:12" },
+      { id: "SO-20504", title: "固定资产登记",   org: "财务组",   kind: "填报", type: "form",     typeLabel: "数据填报", who: "王雅琪", amount: "—",         status: "done",     time: "09-10 11:35" },
+      { id: "SO-20503", title: "考勤异常申诉",   org: "人力资源", kind: "审批", type: "approval", typeLabel: "审批流程", who: "陈浩",   amount: "—",         status: "rejected", time: "09-10 10:02" },
+      { id: "SO-20502", title: "客户主数据同步", org: "市场部",   kind: "同步", type: "sync",     typeLabel: "数据同步", who: "系统",   amount: "—",         status: "done",     time: "09-10 08:30" },
+      { id: "SO-20501", title: "培训报名表",     org: "人力资源", kind: "填报", type: "form",     typeLabel: "数据填报", who: "周敏",   amount: "—",         status: "done",     time: "09-09 17:44" },
+      { id: "SO-20500", title: "合同用印申请",   org: "财务组",   kind: "审批", type: "approval", typeLabel: "审批流程", who: "李承宇", amount: "¥ 240,000", status: "pending",  time: "09-09 16:20" },
+      { id: "SO-20499", title: "研发工时填报",   org: "研发中心", kind: "填报", type: "form",     typeLabel: "数据填报", who: "赵鹏",   amount: "—",         status: "done",     time: "09-09 14:08" },
+      { id: "SO-20498", title: "退款审批单",     org: "财务组",   kind: "审批", type: "approval", typeLabel: "审批流程", who: "王雅琪", amount: "¥ 3,680",   status: "rejected", time: "09-09 11:52" },
+      { id: "SO-20497", title: "供应商准入评估", org: "财务组",   kind: "审批", type: "approval", typeLabel: "审批流程", who: "陈浩",   amount: "¥ 12,500",  status: "done",     time: "09-09 10:26" },
+      { id: "SO-20496", title: "办公用品领用",   org: "人力资源", kind: "填报", type: "form",     typeLabel: "数据填报", who: "刘思彤", amount: "—",         status: "draft",    time: "09-08 18:10" },
+      { id: "SO-20495", title: "组织架构调整",   org: "人力资源", kind: "审批", type: "approval", typeLabel: "审批流程", who: "张思远", amount: "—",         status: "done",     time: "09-08 15:33" },
+      { id: "SO-20494", title: "物料编码新增",   org: "研发中心", kind: "填报", type: "form",     typeLabel: "数据填报", who: "周敏",   amount: "—",         status: "done",     time: "09-08 13:47" },
+      { id: "SO-20493", title: "ERP 库存同步",   org: "研发中心", kind: "同步", type: "sync",     typeLabel: "数据同步", who: "系统",   amount: "—",         status: "done",     time: "09-08 09:15" },
+      { id: "SO-20492", title: "预算追加申请",   org: "财务组",   kind: "审批", type: "approval", typeLabel: "审批流程", who: "李承宇", amount: "¥ 96,000",  status: "pending",  time: "09-08 08:40" }
+    ];
+
+    var STATUS_CLASS = { pending: "warn", done: "ok", rejected: "err", draft: "idle" };
+    var STATUS_LABEL = { pending: "进行中", done: "已完成", rejected: "已驳回", draft: "草稿" };
+
+    var docBody = document.getElementById("doc-body");
+    var docRange = document.getElementById("doc-range");
+    var docPages = document.getElementById("doc-pages");
+    var docTabs = document.getElementById("doc-tabs");
+    var docSearch = document.getElementById("doc-search");
+    var docSelect = document.getElementById("doc-type");
+    var docState = { status: "", type: "", q: "", page: 1, per: 7 };
+
+    function docMatches(r) {
+      if (docState.status && r.status !== docState.status) return false;
+      if (docState.type && r.type !== docState.type) return false;
+      if (docState.q) {
+        var hay = (r.id + " " + r.title + " " + r.who + " " + r.org).toLowerCase();
+        if (hay.indexOf(docState.q.toLowerCase()) === -1) return false;
+      }
+      return true;
+    }
+
+    function docRowHTML(r) {
+      return '<tr data-tags="' + r.status + " " + r.type + '">' +
+        '<td class="num ident">' + r.id + "</td>" +
+        '<td><div class="cell-main"><span class="cm-title">' + r.title +
+          '</span><span class="cm-sub">' + r.org + " · " + r.kind + "</span></div></td>" +
+        "<td>" + r.typeLabel + "</td>" +
+        "<td>" + r.who + "</td>" +
+        '<td class="num">' + r.amount + "</td>" +
+        '<td><span class="status ' + STATUS_CLASS[r.status] + '">' + STATUS_LABEL[r.status] + "</span></td>" +
+        '<td class="meta">' + r.time + "</td></tr>";
+    }
+
+    function renderDocTable() {
+      if (!docBody) return;
+      var rows = DOCS.filter(docMatches);
+      var pages = Math.max(1, Math.ceil(rows.length / docState.per));
+      if (docState.page > pages) docState.page = pages;
+      var start = (docState.page - 1) * docState.per;
+      var slice = rows.slice(start, start + docState.per);
+
+      if (!slice.length) {
+        docBody.innerHTML = '<tr class="empty-row"><td colspan="7">没有匹配的单据，试试清空搜索或切换状态筛选</td></tr>';
+      } else {
+        docBody.innerHTML = slice.map(docRowHTML).join("");
+      }
+
+      var filtered = docState.status || docState.type || docState.q;
+      if (docRange) {
+        docRange.textContent = "显示 " + (slice.length ? start + 1 : 0) + "–" + (start + slice.length) +
+          " 条，共 " + OrbitData.fmt(rows.length) + " 条" + (filtered ? " · 已筛选" : "");
+      }
+
+      if (docPages) {
+        var html = '<button class="page-btn" type="button" data-page="prev" aria-label="上一页"' +
+                   (docState.page === 1 ? " disabled" : "") + ">‹</button>";
+        for (var p = 1; p <= pages; p++) {
+          html += '<button class="page-btn' + (p === docState.page ? " is-active" : "") +
+                  '" type="button" data-page="' + p + '"' +
+                  (p === docState.page ? ' aria-current="page"' : "") + ">" + p + "</button>";
+        }
+        html += '<button class="page-btn" type="button" data-page="next" aria-label="下一页"' +
+                (docState.page === pages ? " disabled" : "") + ">›</button>";
+        docPages.innerHTML = html;
+      }
+    }
+
+    if (docTabs) {
+      Array.prototype.slice.call(docTabs.querySelectorAll(".tab")).forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          Array.prototype.slice.call(docTabs.querySelectorAll(".tab")).forEach(function (t) {
+            var on = t === tab;
+            t.classList.toggle("is-active", on);
+            t.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          docState.status = tab.getAttribute("data-filter-value") || "";
+          docState.page = 1;
+          renderDocTable();
+        });
+      });
+    }
+
+    if (docSelect) {
+      docSelect.addEventListener("change", function () {
+        docState.type = docSelect.value;
+        docState.page = 1;
+        renderDocTable();
+      });
+    }
+
+    if (docSearch) {
+      docSearch.addEventListener("input", function () {
+        docState.q = docSearch.value.trim();
+        docState.page = 1;
+        renderDocTable();
+      });
+    }
+
+    if (docPages) {
+      docPages.addEventListener("click", function (e) {
+        var btn = e.target.closest ? e.target.closest("[data-page]") : null;
+        if (!btn || btn.disabled) return;
+        var v = btn.getAttribute("data-page");
+        var pages = Math.max(1, Math.ceil(DOCS.filter(docMatches).length / docState.per));
+        if (v === "prev") docState.page = Math.max(1, docState.page - 1);
+        else if (v === "next") docState.page = Math.min(pages, docState.page + 1);
+        else docState.page = parseInt(v, 10);
+        renderDocTable();
+      });
+    }
+
+    /* 顶栏全局搜索回车后，统一入口把关键词投到这里。 */
+    OrbitBus.on("search", function (q) {
+      if (!q) return;
+      docState.q = q;
+      docState.page = 1;
+      if (docSearch) docSearch.value = q;
+      renderDocTable();
+      if (docSearch) docSearch.focus();
+    });
+
+    renderDocTable();
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("table");
+  </script>
+</body>
+</html>

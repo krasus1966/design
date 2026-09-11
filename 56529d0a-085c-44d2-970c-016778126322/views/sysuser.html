@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>用户管理 · Orbit 低代码控制台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/orbit.css" />
+  <!-- 主题得在首次绘制前定下来：本文件同步加载并立刻读 URL 片段，
+       否则深色下会先闪一帧白。 -->
+  <script src="../assets/orbit-bus.js"></script>
+</head>
+<body class="view-body">
+  <section class="view" data-view="sysuser" data-od-id="view-sysuser">
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>用户管理</h1>
+        <p class="ph-sub">系统账号目录：登录名、所属部门、角色与账号状态</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-primary" type="button" data-od-id="user-add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>
+          新增用户
+        </button>
+      </div>
+    </div>
+
+    <div class="panel" data-od-id="panel-users">
+      <div class="toolbar">
+        <div class="tabs" role="tablist" aria-label="账号状态" id="user-tabs" data-od-id="user-status-tabs">
+          <button class="tab is-active" type="button" role="tab" aria-selected="true" data-filter-value="">全部</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="ok">正常</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="off">已停用</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-filter-value="lock">已锁定</button>
+        </div>
+        <span class="grow"></span>
+        <select class="select" id="user-dept" aria-label="按部门筛选" style="width:auto"></select>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input class="input" type="search" id="user-search" placeholder="搜索姓名或登录名" aria-label="搜索用户" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="ds-table" id="user-table">
+          <thead>
+            <tr>
+              <th>用户</th>
+              <th>所属部门</th>
+              <th>角色</th>
+              <th>状态</th>
+              <th>最后登录</th>
+              <th><span class="sr-only">操作</span></th>
+            </tr>
+          </thead>
+          <tbody id="user-body"></tbody>
+        </table>
+      </div>
+
+      <div class="pager">
+        <span class="meta" id="user-range">—</span>
+        <div class="pager-pages" id="user-pages"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 共享数据层：组织 / 账号 / 角色 / 菜单，与统一入口是同一份。 -->
+  <script src="../assets/orbit-data.js"></script>
+  <script>
+    /* 用户管理：状态页签 / 部门下拉 / 检索 / 分页 / 启停。
+       账号状态写回 OrbitData 并广播，与「成员管理」共用同一条真相。 */
+    var userBody = document.getElementById("user-body");
+    var userPages = document.getElementById("user-pages");
+    var userRange = document.getElementById("user-range");
+    var userState = { status: "", dept: "", q: "", page: 1, per: 10, focus: null };
+
+    (function fillDeptSelect() {
+      var sel = document.getElementById("user-dept");
+      if (!sel) return;
+      var opts = ['<option value="">全部部门</option>'];
+      OrbitData.DEPTS.forEach(function (d) {
+        var depth = OrbitData.deptPath(d.code).split(" / ").length - 1;
+        opts.push('<option value="' + d.code + '">' + (depth >= 2 ? "　" : "") + d.name + "</option>");
+      });
+      sel.innerHTML = opts.join("");
+    })();
+
+    function userMatches(u) {
+      if (userState.status && u[4] !== userState.status) return false;
+      if (userState.dept && OrbitData.deptDescendants(userState.dept).indexOf(u[2]) === -1) return false;
+      if (userState.q) {
+        var hay = (u[0] + " " + u[1] + " " + OrbitData.DEPT_BY_CODE[u[2]].name).toLowerCase();
+        if (hay.indexOf(userState.q.toLowerCase()) === -1) return false;
+      }
+      return true;
+    }
+
+    function userRowHTML(u) {
+      var dept = OrbitData.DEPT_BY_CODE[u[2]];
+      var parentName = dept.parent ? OrbitData.DEPT_BY_CODE[dept.parent].name : "—";
+      var st = OrbitData.USER_STATUS[u[4]];
+      /* 与「成员管理」同一条规则：当前账号不能停用自己。 */
+      var action = u[1] === "zhang"
+        ? '<span class="meta">当前账号</span>'
+        : '<button class="btn btn-ghost" type="button" data-user-toggle="' + u[1] + '">' +
+          (u[4] === "ok" ? "停用" : (u[4] === "lock" ? "解锁" : "启用")) + "</button>";
+      return '<tr data-login="' + u[1] + '">' +
+        '<td><div class="cell-main"><span class="cm-title">' + u[0] +
+          '</span><span class="cm-sub">' + u[1] + "@orbit.io</span></div></td>" +
+        '<td><div class="cell-main"><span>' + dept.name +
+          '</span><span class="cm-sub">' + parentName + "</span></div></td>" +
+        '<td><span class="tag">' + OrbitData.ROLE_BY_CODE[u[3]].name + "</span></td>" +
+        '<td><span class="status ' + st.cls + '">' + st.label + "</span></td>" +
+        '<td class="meta">' + u[5] + "</td>" +
+        '<td><div class="row-actions">' + action + "</div></td></tr>";
+    }
+
+    function renderUsers() {
+      if (!userBody) return;
+      var rows = OrbitData.USERS.filter(userMatches);
+      var pages = Math.max(1, Math.ceil(rows.length / userState.per));
+      if (userState.page > pages) userState.page = pages;
+      var start = (userState.page - 1) * userState.per;
+      var slice = rows.slice(start, start + userState.per);
+
+      userBody.innerHTML = slice.length
+        ? slice.map(userRowHTML).join("")
+        : '<tr class="empty-row"><td colspan="6">没有匹配的账号，试试清空搜索或切换筛选条件</td></tr>';
+
+      var filtered = userState.status || userState.dept || userState.q;
+      if (userRange) {
+        userRange.textContent = "显示 " + (slice.length ? start + 1 : 0) + "–" + (start + slice.length) +
+          " 条，共 " + OrbitData.fmt(rows.length) + " 条" + (filtered ? " · 已筛选" : "");
+      }
+
+      if (userPages) {
+        var html = '<button class="page-btn" type="button" data-upage="prev" aria-label="上一页"' +
+                   (userState.page === 1 ? " disabled" : "") + ">‹</button>";
+        for (var p = 1; p <= pages; p++) {
+          html += '<button class="page-btn' + (p === userState.page ? " is-active" : "") +
+                  '" type="button" data-upage="' + p + '"' +
+                  (p === userState.page ? ' aria-current="page"' : "") + ">" + p + "</button>";
+        }
+        html += '<button class="page-btn" type="button" data-upage="next" aria-label="下一页"' +
+                (userState.page === pages ? " disabled" : "") + ">›</button>";
+        userPages.innerHTML = html;
+      }
+
+      /* 重新渲染会丢掉焦点，按登录名把它放回去，键盘操作才连得上。 */
+      if (userState.focus) {
+        var el = userBody.querySelector('[data-user-toggle="' + userState.focus + '"]');
+        if (el) el.focus();
+        userState.focus = null;
+      }
+    }
+
+    Array.prototype.slice.call(document.querySelectorAll("#user-tabs .tab")).forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        Array.prototype.slice.call(document.querySelectorAll("#user-tabs .tab")).forEach(function (t) {
+          var on = t === tab;
+          t.classList.toggle("is-active", on);
+          t.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        userState.status = tab.getAttribute("data-filter-value") || "";
+        userState.page = 1;
+        renderUsers();
+      });
+    });
+
+    var userSel = document.getElementById("user-dept");
+    if (userSel) {
+      userSel.addEventListener("change", function () {
+        userState.dept = userSel.value;
+        userState.page = 1;
+        renderUsers();
+      });
+    }
+
+    var userSearch = document.getElementById("user-search");
+    if (userSearch) {
+      userSearch.addEventListener("input", function () {
+        userState.q = userSearch.value.trim();
+        userState.page = 1;
+        renderUsers();
+      });
+    }
+
+    if (userPages) {
+      userPages.addEventListener("click", function (e) {
+        var btn = e.target.closest ? e.target.closest("[data-upage]") : null;
+        if (!btn || btn.disabled) return;
+        var v = btn.getAttribute("data-upage");
+        var pages = Math.max(1, Math.ceil(OrbitData.USERS.filter(userMatches).length / userState.per));
+        if (v === "prev") userState.page = Math.max(1, userState.page - 1);
+        else if (v === "next") userState.page = Math.min(pages, userState.page + 1);
+        else userState.page = parseInt(v, 10);
+        renderUsers();
+      });
+    }
+
+    if (userBody) {
+      userBody.addEventListener("click", function (e) {
+        var btn = e.target.closest ? e.target.closest("[data-user-toggle]") : null;
+        if (!btn) return;
+        var login = btn.getAttribute("data-user-toggle");
+        var target = OrbitData.USER_BY_LOGIN[login];
+        if (!target) return;
+        var next = target[4] === "ok" ? "off" : "ok";
+        userState.focus = login;
+        OrbitData.setAccountStatus(login, next);
+        renderUsers();
+        /* 通知统一入口与「成员管理」——同一批账号，同一份状态。 */
+        OrbitBus.send("account", { login: login, status: next });
+      });
+    }
+
+    /* 表格是从 OrbitData.USERS 渲染的，先落数据再重绘。 */
+    OrbitBus.on("account", function (p) {
+      if (p) OrbitData.setAccountStatus(p.login, p.status);
+      renderUsers();
+    });
+    OrbitBus.on("accounts:state", function (map) {
+      OrbitData.applyAccountState(map);
+      renderUsers();
+    });
+
+    renderUsers();
+
+    /* 就绪上报：统一入口据此投递排队中的消息与权威状态。 */
+    OrbitBus.ready("sysuser");
+  </script>
+</body>
+</html>

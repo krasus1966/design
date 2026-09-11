@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "views/charts.html",
+  "entry": "views/charts.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "createdAt": "2026-09-11T08:34:36.208Z",
+  "updatedAt": "2026-09-11T08:34:36.208Z",
+  "metadata": {
+    "inferred": true,
+    "reconciled": true
+  }
+}

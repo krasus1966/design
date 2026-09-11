@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "views/overview.html",
+  "entry": "views/overview.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "createdAt": "2026-09-11T08:34:36.206Z",
+  "updatedAt": "2026-09-11T08:34:36.206Z",
+  "metadata": {
+    "inferred": true,
+    "reconciled": true
+  }
+}
